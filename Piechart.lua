@@ -25,6 +25,8 @@ local p = {}
         - new css + tests
         - provide dumb labels (just v%)
     - custom labels support
+    - pie radius from a 2nd param?
+    - colors in json
     - pl formatting for numbers?
     - support undefined value? (instead of -1)
     - scale values to 100%
@@ -51,10 +53,23 @@ function p.renderPie(json_data)
 	local html = ""
 	local sum = 0;
 	local data = mw.text.jsonDecode( json_data )
+	local size = 100 -- [px]
 	for _, entry in ipairs(data) do
-	    html = html .. renderSlice(entry, sum)
+	    html = html .. '\n\t' .. renderSlice(entry, sum, size)
     	sum = sum + entry.value
 	end
+	
+	-- first label
+	local label = formatValue(data[1].label, data[1].value)
+	
+	html = [[
+<div class="smooth-pie"
+     style="width: ']]..size..[['px; height: 100px; background-color: #347BFF;"
+     title="]]..label..[["
+>]]
+	.. html 
+	.. '\n</div>'
+
 	return html
 end
 
@@ -64,18 +79,30 @@ end
 	@param entry Current entry.
 	@param entry Sum up-until now (in 2-pie that would be % for first value).
 ]]
-function renderSlice(entry, sum)
+function renderSlice(entry, sum, size)
 	local value = entry.value
 	if entry.value < 0 then
         value = 100 - sum
 	end
 
-	-- local label = entry.label:gsub("%$v", value)
-	local label = string.format("%.1f", value) .. "%"
+	local label = formatValue(entry.label, value)
 	
-	local html =  "<p>" .. "Label: " .. label  .. "; value: " .. value  .. "</p>"
+	-- local html =  "<p>" .. "Label: " .. label  .. "; value: " .. value  .. "</p>"
+	local html =  ""
 	
+	local trans = string.format("translatex(%.0fpx)", size/2)
+	local back = 'background-color: #1a3d7f'
+	if (value < 50) then
+		local rotate = string.format("rotate(-%.3fturn)", value/100)
+		html = html .. '<div class="piemask"><div class="slice" style="transform: scale(-1, 1) ' .. rotate .. trans ..'; ' .. back .. ';" title="' .. label  .. '"></div></div>'
+	end
+
 	return html
+end
+
+function formatValue(label, value)
+	-- local label = entry.label:gsub("%$v", value)
+	return string.format("%.1f", value) .. "%"
 end
 
 --[[
