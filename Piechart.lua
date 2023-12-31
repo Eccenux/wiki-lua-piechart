@@ -38,13 +38,13 @@ local p = {}
     - [x] custom labels support
     - [x] pie size from 'meta' param (options json)
     - [x] pl formatting for numbers?
-    - support undefined value? (instead of -1)
-    - scale values to 100%
-    	- values: 10, 30 -> total = 40; values: 10/40, 30/40
-    	- (?) values: 10, -1, total: 40
+    - [x] support undefined value (instead of -1)
     - generate a legend
     	- (?) $info: $values.join(separator)
     	- (?) or a list with css formatting (that could be overriden)
+    - scale values to 100%
+    	- values: 10, 30 -> total = 40; values: 10/40, 30/40
+    	- (?) values: 10, -1, total: 40
     - 3-element pie chart
     - (?) option to sort entries by value
 ]] 
@@ -75,8 +75,9 @@ function p.renderPie(json_data, json_options)
 	local html = ""
 	local sum = 0;
 	for index, entry in ipairs(data) do
-	    html = html .. '\n' .. renderSlice(entry, sum, size, index)
-	    sum = sum + entry.value
+	    local html_slice, value = renderSlice(entry, sum, size, index)
+	    html = html .. html_slice
+	    sum = sum + value
 	end
 	html = html .. '\n</div>'
 
@@ -91,7 +92,7 @@ end
 ]]
 function renderSlice(entry, sum, size, no)
 	local value = entry.value
-	if entry.value < 0 then
+	if value == nil or value < 0 then
         value = 100 - sum
 	end
 
@@ -109,7 +110,7 @@ function renderSlice(entry, sum, size, no)
      style="]]..style..[["
      title="]]..label..[["
 >]]
-		return html
+		return html, value
 	end
 	
 	-- no>1
@@ -130,7 +131,7 @@ function renderSlice(entry, sum, size, no)
 		end
 	end
 
-	return html
+	return html, value
 end
 
 function formatValue(label, value)
