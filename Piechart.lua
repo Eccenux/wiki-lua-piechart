@@ -31,9 +31,9 @@ local p = {}
     - (?) option to sort entries by value
 ]] 
 function p.pie(frame)
-	local json_data = trim(frame.args[1])
-	local html = renderPie(json_data)
-	return html
+	-- local json_data = trim(frame.args[1])
+	-- local html = renderPie(json_data)
+	return "kopytko"
 end
 
 --[[
