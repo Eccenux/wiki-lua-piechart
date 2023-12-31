@@ -5,6 +5,10 @@ local p = {}
 	local json_data = '[{"label": "k: $v", "value": 33.1}, {"label": "m: $v", "value": -1}]'
 	local html = p.renderPie(json_data)
 	mw.logObject(html)
+
+	local json_data = '[{"label": "k: $v", "value": 33.1, "color":"black"}, {"label": "m: $v", "value": -1, "color":"green"}]'
+	local html = p.renderPie(json_data)
+	mw.logObject(html)
 ]]
 
 --[[
@@ -18,15 +22,16 @@ local p = {}
     where $v is a formatted label
 
     TODO:
-    - 2-element pie chart
+    - [x] basic 2-element pie chart
         - read json
         - calculate value with -1
         - generate html
         - new css + tests
         - provide dumb labels (just v%)
+    - [x] colors in json
+    - [x] 1st value >= 50%
     - custom labels support
-    - pie radius from a 2nd param?
-    - colors in json
+    - pie radius from a 2nd param (options json?)
     - pl formatting for numbers?
     - support undefined value? (instead of -1)
     - scale values to 100%
@@ -50,25 +55,16 @@ end
 	@param json_data JSON string with pie data.
 ]]
 function p.renderPie(json_data)
-	local html = ""
-	local sum = 0;
 	local data = mw.text.jsonDecode( json_data )
 	local size = 100 -- [px]
-	for _, entry in ipairs(data) do
-	    html = html .. '\n\t' .. renderSlice(entry, sum, size)
-    	sum = sum + entry.value
+
+	local html = ""
+	local sum = 0;
+	for index, entry in ipairs(data) do
+	    html = html .. '\n' .. renderSlice(entry, sum, size, index)
+	    sum = sum + entry.value
 	end
-	
-	-- first label
-	local label = formatValue(data[1].label, data[1].value)
-	
-	html = [[
-<div class="smooth-pie"
-     style="width: ]]..size..[[px; height: ]]..size..[[px; background-color: #347BFF;"
-     title="]]..label..[["
->]]
-	.. html 
-	.. '\n</div>'
+	html = html .. '\n</div>'
 
 	return html
 end
@@ -79,22 +75,47 @@ end
 	@param entry Current entry.
 	@param entry Sum up-until now (in 2-pie that would be % for first value).
 ]]
-function renderSlice(entry, sum, size)
+function renderSlice(entry, sum, size, no)
 	local value = entry.value
 	if entry.value < 0 then
         value = 100 - sum
 	end
 
 	local label = formatValue(entry.label, value)
+	local bcolor = backColor(entry, no)
 	
 	-- local html =  "<p>" .. "Label: " .. label  .. "; value: " .. value  .. "</p>"
 	local html =  ""
 	
+	mw.log(no)
+	
+	-- first label (left side)
+	if (no==1) then
+		local style = 'width:'..size..'px; height:'..size..'px;'..bcolor
+		html = [[
+<div class="smooth-pie"
+     style="]]..style..[["
+     title="]]..label..[["
+>]]
+		return html
+	end
+	
+	-- no>1
 	local trans = string.format("translatex(%.0fpx)", size/2)
-	local back = 'background-color: #1a3d7f'
 	if (value < 50) then
 		local rotate = string.format("rotate(-%.3fturn)", value/100)
-		html = html .. '<div class="piemask"><div class="slice" style="transform: scale(-1, 1) ' .. rotate .. trans ..'; ' .. back .. ';" title="' .. label  .. '"></div></div>'
+		local transform = 'transform: scale(-1, 1) ' .. rotate .. trans ..';'
+		html = html .. '\n\t<div class="piemask"><div class="slice" style="'..transform..' '..bcolor..'" title="'..label..'"></div></div>'
+	else
+		-- 50%
+		html = html .. '\n\t<div class="piemask"><div class="slice" style="'..bcolor..'" title="'..label..'"></div></div>'
+		-- value overflowing 50% (extra slice)
+		if (value > 50) then
+			local rotate = string.format("rotate(-%.3fturn)", (value-50)/100)
+			local maskTransform = 'transform: rotate(0.5turn);'
+			local transform = 'transform: scale(-1, 1) ' .. rotate .. trans ..';'
+			html = html .. '\n\t<div class="piemask" style="'..maskTransform..'"><div class="slice" style="'..transform..' '..bcolor..'" title="'..label..'"></div></div>'
+		end
 	end
 
 	return html
@@ -103,6 +124,14 @@ end
 function formatValue(label, value)
 	-- local label = entry.label:gsub("%$v", value)
 	return string.format("%.1f", value) .. "%"
+end
+-- no for latter - get deafult form a pallete of colors (probably looping around)
+function backColor(entry, no)
+    if entry.color then
+        return 'background-color: ' .. entry.color
+    else
+        return ''
+    end
 end
 
 --[[
