@@ -145,9 +145,21 @@ function renderSlice(entry, sum, size, no)
 	return html, value
 end
 
-function formatValue(label, value)
+function formatNum(value)
 	local lang = mw.language.getContentLanguage()
-	local v = lang:formatNum(value) --string.format("%.1f", value)
+	
+	-- doesn't do precision :(
+	-- local v = lang:formatNum(value)
+	
+	local v = string.format("%.1f", value)
+	if (lang:getCode() == 'pl') then
+		v = v:gsub("%.", ",")
+	end
+	return v
+end
+
+function formatValue(label, value)
+	local v = formatNum(value)
 	local l = "" 
 	if label then
 		l = label:gsub("%$v", v..'%%')
