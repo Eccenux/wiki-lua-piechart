@@ -1,18 +1,8 @@
 <templatestyles src="Piechart/style.css"/>
-{{#invoke:Piechart|pie| [
- {"label": "k: $v", "value": 25}, 
- {"label": "m: $v", "value": -1}
-] }}
-----
-{{#invoke:Piechart|pie| [
- {"label": "k: $v", "value": 33.3}, 
- {"label": "m: $v", "value": -1}
-] }}
-----
-{{#invoke:Piechart|pie| [
- {"label": "k: $v", "value": 66.6667}, 
- {"label": "m: $v", "value": -1}
-] 
-| meta = {"size":200}
-}}
-----
+{{#invoke:Piechart|pie| {{{1|[
+ {"label": "wieś: $v", "value": 45}, 
+ {"label": "miasto: $v"}
+]}}} }}
+<noinclude>
+[[Moduł:Piechart/opis]]
+</noinclude>
