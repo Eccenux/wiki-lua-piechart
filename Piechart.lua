@@ -30,7 +30,7 @@ local p = {}
         - provide dumb labels (just v%)
     - [x] colors in json
     - [x] 1st value >= 50%
-    - custom labels support
+    - [x] custom labels support
     - pie radius from a 2nd param (options json?)
     - pl formatting for numbers?
     - support undefined value? (instead of -1)
@@ -87,8 +87,6 @@ function renderSlice(entry, sum, size, no)
 	-- local html =  "<p>" .. "Label: " .. label  .. "; value: " .. value  .. "</p>"
 	local html =  ""
 	
-	mw.log(no)
-	
 	-- first label (left side)
 	if (no==1) then
 		local style = 'width:'..size..'px; height:'..size..'px;'..bcolor
@@ -122,10 +120,16 @@ function renderSlice(entry, sum, size, no)
 end
 
 function formatValue(label, value)
-	-- local label = entry.label:gsub("%$v", value)
-	return string.format("%.1f", value) .. "%"
+	local v = string.format("%.1f", value)
+	local l = "" 
+	if label then
+		l = label:gsub("%$v", v..'%%')
+	else
+		l = v .. "%"
+	end
+	return l
 end
--- no for latter - get deafult form a pallete of colors (probably looping around)
+-- #no for later - get deafult form a pallete of colors (probably looping around)
 function backColor(entry, no)
     if entry.color then
         return 'background-color: ' .. entry.color
