@@ -64,7 +64,7 @@ function p.pie(frame)
 	end
 	
 	local html = p.renderPie(json_data, options)
-	return html
+	return trim(html)
 end
 
 --[[
