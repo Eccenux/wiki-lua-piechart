@@ -37,7 +37,7 @@ local p = {}
     - [x] 1st value >= 50%
     - [x] custom labels support
     - [x] pie size from 'meta' param (options json)
-    - pl formatting for numbers?
+    - [x] pl formatting for numbers?
     - support undefined value? (instead of -1)
     - scale values to 100%
     	- values: 10, 30 -> total = 40; values: 10/40, 30/40
@@ -134,7 +134,8 @@ function renderSlice(entry, sum, size, no)
 end
 
 function formatValue(label, value)
-	local v = string.format("%.1f", value)
+	local lang = mw.language.getContentLanguage()
+	local v = lang:formatNum(value) --string.format("%.1f", value)
 	local l = "" 
 	if label then
 		l = label:gsub("%$v", v..'%%')
