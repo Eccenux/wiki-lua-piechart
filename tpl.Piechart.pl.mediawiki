@@ -1,0 +1,6 @@
+{{#invoke:Piechart|pie|
+	[
+        { "label": "w: $v", "value": 33.333  },
+        { "label": "m: $v", "value": -1  },
+    ]
+}}
