@@ -71,3 +71,14 @@ function renderSlice(entry, sum)
 	
 	return html
 end
+
+--[[
+	trim string
+	
+	note:
+	`(s:gsub(...))` returns only a string
+	`s:gsub(...)` returns a string and a number
+]]
+function trim(s)
+	return (s:gsub("^%s+", ""):gsub("%s+$", ""))
+end
