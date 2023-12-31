@@ -64,7 +64,7 @@ function p.renderPie(json_data)
 	
 	html = [[
 <div class="smooth-pie"
-     style="width: ']]..size..[['px; height: 100px; background-color: #347BFF;"
+     style="width: ]]..size..[[px; height: ]]..size..[[px; background-color: #347BFF;"
      title="]]..label..[["
 >]]
 	.. html 
