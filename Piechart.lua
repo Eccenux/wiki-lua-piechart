@@ -39,6 +39,7 @@ local p = {}
     - [x] pie size from 'meta' param (options json)
     - [x] pl formatting for numbers?
     - [x] support undefined value (instead of -1)
+    - [x] undefined in any order
     - generate a legend
     	- (?) $info: $values.join(separator)
     	- (?) or a list with css formatting (that could be overriden)
@@ -73,15 +74,25 @@ function p.renderPie(json_data, json_options)
 	local size = options and options.size or 100 -- [px]
 
 	local html = ""
-	local sum = 0;
+	local sum = sumValues(data);
 	for index, entry in ipairs(data) do
 	    local html_slice, value = renderSlice(entry, sum, size, index)
 	    html = html .. html_slice
-	    sum = sum + value
 	end
 	html = html .. '\n</div>'
 
 	return html
+end
+
+function sumValues(data)
+	local sum = 0;
+	for _, entry in ipairs(data) do
+		local value = entry.value
+		if not (value == nil or value < 0) then
+		    sum = sum + value
+		end
+	end
+	return sum
 end
 
 --[[
