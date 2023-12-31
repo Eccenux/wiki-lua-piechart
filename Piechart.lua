@@ -5,6 +5,11 @@ local p = {}
 	local json_data = '[{"label": "k: $v", "value": 33.1}, {"label": "m: $v", "value": -1}]'
 	local html = p.renderPie(json_data)
 	mw.logObject(html)
+	
+	local json_data = '[{"label": "k: $v", "value": 33.1}, {"label": "m: $v", "value": -1}]'
+	local options = '{"size":200}'
+	local html = p.renderPie(json_data, options)
+	mw.logObject(html)	
 
 	local json_data = '[{"label": "k: $v", "value": 33.1, "color":"black"}, {"label": "m: $v", "value": -1, "color":"green"}]'
 	local html = p.renderPie(json_data)
@@ -31,7 +36,7 @@ local p = {}
     - [x] colors in json
     - [x] 1st value >= 50%
     - [x] custom labels support
-    - pie radius from a 2nd param (options json?)
+    - [x] pie size from 'meta' param (options json)
     - pl formatting for numbers?
     - support undefined value? (instead of -1)
     - scale values to 100%
@@ -45,7 +50,12 @@ local p = {}
 ]] 
 function p.pie(frame)
 	local json_data = trim(frame.args[1])
-	local html = p.renderPie(json_data)
+	local options = nil
+	if (frame.args.meta) then
+		options = trim(frame.args.meta)
+	end
+	
+	local html = p.renderPie(json_data, options)
 	return html
 end
 
@@ -54,9 +64,13 @@ end
 	
 	@param json_data JSON string with pie data.
 ]]
-function p.renderPie(json_data)
-	local data = mw.text.jsonDecode( json_data )
-	local size = 100 -- [px]
+function p.renderPie(json_data, json_options)
+	local data = mw.text.jsonDecode(json_data)
+	local options = nil
+	if json_options then
+		options = mw.text.jsonDecode(json_options)
+	end
+	local size = options and options.size or 100 -- [px]
 
 	local html = ""
 	local sum = 0;
@@ -102,7 +116,7 @@ function renderSlice(entry, sum, size, no)
 	local trans = string.format("translatex(%.0fpx)", size/2)
 	if (value < 50) then
 		local rotate = string.format("rotate(-%.3fturn)", value/100)
-		local transform = 'transform: scale(-1, 1) ' .. rotate .. trans ..';'
+		local transform = 'transform: scale(-1, 1) ' .. rotate .. ' ' .. trans ..';'
 		html = html .. '\n\t<div class="piemask"><div class="slice" style="'..transform..' '..bcolor..'" title="'..label..'"></div></div>'
 	else
 		-- 50%
@@ -111,7 +125,7 @@ function renderSlice(entry, sum, size, no)
 		if (value > 50) then
 			local rotate = string.format("rotate(-%.3fturn)", (value-50)/100)
 			local maskTransform = 'transform: rotate(0.5turn);'
-			local transform = 'transform: scale(-1, 1) ' .. rotate .. trans ..';'
+			local transform = 'transform: scale(-1, 1) ' .. rotate .. ' ' .. trans ..';'
 			html = html .. '\n\t<div class="piemask" style="'..maskTransform..'"><div class="slice" style="'..transform..' '..bcolor..'" title="'..label..'"></div></div>'
 		end
 	end
