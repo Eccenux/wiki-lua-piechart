@@ -2,15 +2,23 @@ local p = {}
 --[[
 	Debug:
 	
+	-- labels and auto-value
 	local json_data = '[{"label": "k: $v", "value": 33.1}, {"label": "m: $v", "value": -1}]'
 	local html = p.renderPie(json_data)
 	mw.logObject(html)
 	
+	-- autoscale values
+	local json_data = '[{"value": 700}, {"value": 300}]'
+	local html = p.renderPie(json_data, options)
+	mw.logObject(html)	
+	
+	-- size option
 	local json_data = '[{"label": "k: $v", "value": 33.1}, {"label": "m: $v", "value": -1}]'
 	local options = '{"size":200}'
 	local html = p.renderPie(json_data, options)
 	mw.logObject(html)	
 
+	-- custom colors
 	local json_data = '[{"label": "k: $v", "value": 33.1, "color":"black"}, {"label": "m: $v", "value": -1, "color":"green"}]'
 	local html = p.renderPie(json_data)
 	mw.logObject(html)
@@ -40,12 +48,11 @@ local p = {}
     - [x] pl formatting for numbers?
     - [x] support undefined value (instead of -1)
     - [x] undefined in any order
+    - [x] scale values to 100% (autoscale)
+    - validate user values (make sure number is a number for security reasons)
     - generate a legend
     	- (?) $info: $values.join(separator)
     	- (?) or a list with css formatting (that could be overriden)
-    - scale values to 100%
-    	- values: 10, 30 -> total = 40; values: 10/40, 30/40
-    	- (?) values: 10, -1, total: 40
     - 3-element pie chart
     - (?) option to sort entries by value
 ]] 
@@ -71,12 +78,17 @@ function p.renderPie(json_data, json_options)
 	if json_options then
 		options = mw.text.jsonDecode(json_options)
 	end
-	local size = options and options.size or 100 -- [px]
+	local size = options and options.size or 100 -- circle size in [px]
+	local autoscale = options and options.autoscale or false -- autoscale values
 
 	local html = ""
 	local sum = sumValues(data);
+	-- force autoscale when over 100
+	if (sum > 100) then
+		autoscale = true
+	end
 	for index, entry in ipairs(data) do
-	    local html_slice, value = renderSlice(entry, sum, size, index)
+	    local html_slice, value = renderSlice(entry, sum, size, index, autoscale)
 	    html = html .. html_slice
 	end
 	html = html .. '\n</div>'
@@ -101,10 +113,16 @@ end
 	@param entry Current entry.
 	@param entry Sum up-until now (in 2-pie that would be % for first value).
 ]]
-function renderSlice(entry, sum, size, no)
+function renderSlice(entry, sum, size, no, autoscale)
 	local value = entry.value
 	if value == nil or value < 0 then
+		if autoscale then
+			return "<!-- cannot autoscale unknown value -->"
+		end
         value = 100 - sum
+	end
+	if autoscale then
+        value = (value / sum) * 100
 	end
 
 	local label = formatValue(entry.label, value)
