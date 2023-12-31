@@ -1,3 +1,5 @@
+{{#invoke:Piechart|pie| abc }}
+----
 {{#invoke:Piechart|pie|
 	[
         { "label": "w: $v", "value": 33.333  },
