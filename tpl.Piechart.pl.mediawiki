@@ -1,3 +1,4 @@
+<templatestyles src="Piechart/style.css"/>
 {{#invoke:Piechart|pie| [
  {"label": "k: $v", "value": 25}, 
  {"label": "m: $v", "value": -1}
