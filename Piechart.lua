@@ -62,7 +62,7 @@ local p = {}
     - [x] scale values to 100% (autoscale)
     - [x] order values clockwise (not left/right)
     - [x] multi-cut pie
-    - validate user values (make sure number is a number for security reasons)
+    - [x] sanitize user values
     - generate a legend
     	- (?) $info: $values.join(separator)
     	- (?) or a list with css formatting (that could be overriden)
@@ -90,7 +90,7 @@ function p.renderPie(json_data, json_options)
 	if json_options then
 		options = mw.text.jsonDecode(json_options)
 	end
-	local size = options and options.size or 100 -- circle size in [px]
+	local size = options and type(options.size) == "number" or 100 -- circle size in [px]
 	local autoscale = options and options.autoscale or false -- autoscale values
 
 	-- Move the last element to the first position
@@ -122,7 +122,7 @@ function sumValues(data)
 	local sum = 0;
 	for _, entry in ipairs(data) do
 		local value = entry.value
-		if not (value == nil or value < 0) then
+		if not (type(value) ~= "number" or value < 0) then
 		    sum = sum + value
 		end
 	end
@@ -148,7 +148,7 @@ end
 -- Prepare single slice data.
 function genSlice(entry, sum, index, autoscale)
 	local value = entry.value
-	if value == nil or value < 0 then
+	if (type(value) ~= "number" or value < 0) then
 		if autoscale then
 			return "<!-- cannot autoscale unknown value -->"
 		end
@@ -233,8 +233,10 @@ function formatValue(label, value)
 end
 -- #no for later - get deafult form a pallete of colors (probably looping around)
 function backColor(entry, no)
-    if entry.color then
-        return 'background-color: ' .. entry.color
+    if (type(entry.color) == "string") then
+    	-- Remove unsafe characters from entry.color
+    	local sanitizedColor = entry.color:gsub("[^a-zA-Z0-9#%-]", "")
+        return 'background-color: ' .. sanitizedColor
     else
         return ''
     end
