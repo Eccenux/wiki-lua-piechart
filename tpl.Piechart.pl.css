@@ -26,13 +26,7 @@
 						100% 100%,
 						50% 100%);
 }
-/* default colors */
-.smooth-pie {
-	background-color: #005744;
-}
-.smooth-pie .slice {
-	background-color: #00AF89;
-}
+/* unlock for supported browsers */
 @supports(clip-path: circle(50%)) {
 	.smooth-pie div {
 		display:block;
