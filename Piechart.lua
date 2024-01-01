@@ -26,11 +26,12 @@ local p = {}
 	-- 3-cuts
 	local entries = {
 	    '{"label": "ciastka: $v", "value": 2, "color":"goldenrod"}',
-	    '{"label": "słodycze: $v", "value": 5, "color":"darkred"}',
+	    '{"label": "słodycze: $v", "value": 4, "color":"darkred"}',
+	    '{"label": "napoje: $v", "value": 1, "color":"lightblue"}',
 	    '{"label": "kanapki: $v", "value": 3, "color":"wheat"}'
 	}
 	local json_data = '['..table.concat(entries, ',')..']'
-	local html = p.renderPie(json_data, '{"autoscale"=true}')
+	local html = p.renderPie(json_data, '{"autoscale":true}')
 	mw.logObject(html)
 ]]
 
@@ -102,9 +103,15 @@ function p.renderPie(json_data, json_options)
 	if (sum > 100) then
 		autoscale = true
 	end
+	local first = true
+	local previous = 0
 	for index, entry in ipairs(data) do
-	    local html_slice, value = renderSlice(entry, sum, size, index, autoscale)
+	    local html_slice, value = renderSlice(entry, previous, sum, size, index, autoscale)
 	    html = html .. html_slice
+	    if not first then
+	    	previous = previous + value
+	    end
+	    first = false
 	end
 	html = html .. '\n</div>'
 
@@ -128,13 +135,13 @@ end
 	@param entry Current entry.
 	@param sum Sum of all entries.
 ]]
-function renderSlice(entry, sum, size, index, autoscale)
+function renderSlice(entry, previous, sum, size, index, autoscale)
 	local value, label, bcolor = genSlice(entry, sum, index, autoscale)
 	local html = ""
 	if (index==1) then
 		html = renderFinal(label, bcolor, size)
 	else
-		html = renderOther(value, label, bcolor, size)
+		html = renderOther(value, previous, label, bcolor, size)
 	end
 	return html, value
 end
@@ -168,27 +175,37 @@ function renderFinal(label, bcolor, size)
 	return html
 end
 -- any other then final
-function renderOther(value, label, bcolor, size)
+function renderOther(value, previous, label, bcolor, size)
 	local html =  ""
 	
 	local trans = string.format("translatex(%.0fpx)", size/2)
+	local maskStyle = getMaskStyle(previous)
 	if (value < 50) then
 		local rotate = string.format("rotate(-%.3fturn)", value/100)
 		local transform = 'transform: scale(-1, 1) ' .. rotate .. ' ' .. trans ..';'
-		html = html .. '\n\t<div class="piemask"><div class="slice" style="'..transform..' '..bcolor..'" title="'..label..'"></div></div>'
+		html = html .. '\n\t<div class="piemask" '..maskStyle..'><div class="slice" style="'..transform..' '..bcolor..'" title="'..label..'"></div></div>'
 	else
 		-- 50%
-		html = html .. '\n\t<div class="piemask"><div class="slice" style="'..bcolor..'" title="'..label..'"></div></div>'
+		html = html .. '\n\t<div class="piemask" '..maskStyle..'><div class="slice" style="'..bcolor..'" title="'..label..'"></div></div>'
 		-- value overflowing 50% (extra slice)
 		if (value > 50) then
+			maskStyle = getMaskStyle(previous + 50)
 			local rotate = string.format("rotate(-%.3fturn)", (value-50)/100)
-			local maskTransform = 'transform: rotate(0.5turn);'
 			local transform = 'transform: scale(-1, 1) ' .. rotate .. ' ' .. trans ..';'
-			html = html .. '\n\t<div class="piemask" style="'..maskTransform..'"><div class="slice" style="'..transform..' '..bcolor..'" title="'..label..'"></div></div>'
+			html = html .. '\n\t<div class="piemask" '..maskStyle..'><div class="slice" style="'..transform..' '..bcolor..'" title="'..label..'"></div></div>'
 		end
 	end
 	
 	return html
+end
+-- style of a mask (rotate into place)
+function getMaskStyle(previous)
+	if (previous>0) then
+		local maskRotate = string.format("rotate(-%.3fturn)", previous/100)
+		local maskStyle = 'style="transform: '..maskRotate..';"'
+		return maskStyle
+	end
+	return ''
 end
 
 function formatNum(value)
