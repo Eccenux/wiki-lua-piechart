@@ -90,7 +90,7 @@ function p.renderPie(json_data, json_options)
 	if json_options then
 		options = mw.text.jsonDecode(json_options)
 	end
-	local size = options and type(options.size) == "number" or 100 -- circle size in [px]
+	local size = options and type(options.size) == "number" and math.floor(options.size) or 100 -- circle size in [px]
 	local autoscale = options and options.autoscale or false -- autoscale values
 
 	-- Move the last element to the first position
