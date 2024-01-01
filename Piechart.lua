@@ -49,11 +49,12 @@ local p = {}
     - [x] support undefined value (instead of -1)
     - [x] undefined in any order
     - [x] scale values to 100% (autoscale)
+    - [x] order values clockwise (not left/right)
+    - [x] multi-cut pie
     - validate user values (make sure number is a number for security reasons)
     - generate a legend
     	- (?) $info: $values.join(separator)
     	- (?) or a list with css formatting (that could be overriden)
-    - 3-element pie chart
     - (?) option to sort entries by value
 ]] 
 function p.pie(frame)
@@ -80,6 +81,10 @@ function p.renderPie(json_data, json_options)
 	end
 	local size = options and options.size or 100 -- circle size in [px]
 	local autoscale = options and options.autoscale or false -- autoscale values
+
+	-- Move the last element to the first position
+	local lastEntry = table.remove(data)
+	table.insert(data, 1, lastEntry)
 
 	local html = ""
 	local sum = sumValues(data);
@@ -111,9 +116,20 @@ end
 	Render a single slice.
 	
 	@param entry Current entry.
-	@param entry Sum up-until now (in 2-pie that would be % for first value).
+	@param sum Sum of all entries.
 ]]
-function renderSlice(entry, sum, size, no, autoscale)
+function renderSlice(entry, sum, size, index, autoscale)
+	local value, label, bcolor = genSlice(entry, sum, index, autoscale)
+	local html = ""
+	if (index==1) then
+		html = renderFinal(label, bcolor, size)
+	else
+		html = renderOther(value, label, bcolor, size)
+	end
+	return html, value
+end
+-- Prepare single slice data.
+function genSlice(entry, sum, index, autoscale)
 	local value = entry.value
 	if value == nil or value < 0 then
 		if autoscale then
@@ -126,23 +142,25 @@ function renderSlice(entry, sum, size, no, autoscale)
 	end
 
 	local label = formatValue(entry.label, value)
-	local bcolor = backColor(entry, no)
+	local bcolor = backColor(entry, index)
 	
-	-- local html =  "<p>" .. "Label: " .. label  .. "; value: " .. value  .. "</p>"
+	return value, label, bcolor
+end
+-- final, but header...
+function renderFinal(label, bcolor, size)
 	local html =  ""
-	
-	-- first label (left side)
-	if (no==1) then
-		local style = 'width:'..size..'px; height:'..size..'px;'..bcolor
-		html = [[
+	local style = 'width:'..size..'px; height:'..size..'px;'..bcolor
+	html = [[
 <div class="smooth-pie"
      style="]]..style..[["
      title="]]..label..[["
 >]]
-		return html, value
-	end
+	return html
+end
+-- any other then final
+function renderOther(value, label, bcolor, size)
+	local html =  ""
 	
-	-- no>1
 	local trans = string.format("translatex(%.0fpx)", size/2)
 	if (value < 50) then
 		local rotate = string.format("rotate(-%.3fturn)", value/100)
@@ -159,8 +177,8 @@ function renderSlice(entry, sum, size, no, autoscale)
 			html = html .. '\n\t<div class="piemask" style="'..maskTransform..'"><div class="slice" style="'..transform..' '..bcolor..'" title="'..label..'"></div></div>'
 		end
 	end
-
-	return html, value
+	
+	return html
 end
 
 function formatNum(value)
