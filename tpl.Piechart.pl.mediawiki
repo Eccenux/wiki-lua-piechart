@@ -2,6 +2,8 @@
 {{#invoke:Piechart|pie| {{{1|[
  {"label": "wieś: $v", "value": 45}, 
  {"label": "miasto: $v"}
-]}}} }}<noinclude>
+]}}}
+| meta = {{{meta|{}}}}
+}}<noinclude>
 [[Moduł:Piechart/opis]]
 </noinclude>
