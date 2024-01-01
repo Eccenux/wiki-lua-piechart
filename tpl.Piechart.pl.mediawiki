@@ -3,7 +3,9 @@
  {"label": "wieś: $v", "value": 45}, 
  {"label": "miasto: $v"}
 ]}}}
-| meta = {{{meta|{}}}}
+| meta = {{{meta|
+{}
+}}}
 }}<noinclude>
 [[Moduł:Piechart/opis]]
 </noinclude>
