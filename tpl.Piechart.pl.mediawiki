@@ -7,5 +7,5 @@
 {}
 }}}
 }}<noinclude>
-[[Moduł:Piechart/opis]]
+{{Moduł:Piechart/opis}}
 </noinclude>
