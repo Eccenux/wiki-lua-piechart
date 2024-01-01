@@ -63,6 +63,8 @@ local p = {}
     - [x] order values clockwise (not left/right)
     - [x] multi-cut pie
     - [x] sanitize user values
+    - [x] auto colors
+    - function to get color by number (for custom legend)
     - generate a legend
     	- (?) $info: $values.join(separator)
     	- (?) or a list with css formatting (that could be overriden)
@@ -105,8 +107,9 @@ function p.renderPie(json_data, json_options)
 	end
 	local first = true
 	local previous = 0
+	local totalCount = #data
 	for index, entry in ipairs(data) do
-	    local html_slice, value = renderSlice(entry, previous, sum, size, index, autoscale)
+	    local html_slice, value = renderSlice(entry, previous, sum, size, index, autoscale, totalCount)
 	    html = html .. html_slice
 	    if not first then
 	    	previous = previous + value
@@ -135,8 +138,8 @@ end
 	@param entry Current entry.
 	@param sum Sum of all entries.
 ]]
-function renderSlice(entry, previous, sum, size, index, autoscale)
-	local value, label, bcolor = genSlice(entry, sum, index, autoscale)
+function renderSlice(entry, previous, sum, size, index, autoscale, totalCount)
+	local value, label, bcolor = genSlice(entry, sum, index, autoscale, totalCount)
 	local html = ""
 	if (index==1) then
 		html = renderFinal(label, bcolor, size)
@@ -146,7 +149,7 @@ function renderSlice(entry, previous, sum, size, index, autoscale)
 	return html, value
 end
 -- Prepare single slice data.
-function genSlice(entry, sum, index, autoscale)
+function genSlice(entry, sum, index, autoscale, totalCount)
 	local value = entry.value
 	if (type(value) ~= "number" or value < 0) then
 		if autoscale then
@@ -159,7 +162,7 @@ function genSlice(entry, sum, index, autoscale)
 	end
 
 	local label = formatValue(entry.label, value)
-	local bcolor = backColor(entry, index)
+	local bcolor = backColor(entry, index, totalCount)
 	
 	return value, label, bcolor
 end
@@ -231,14 +234,32 @@ function formatValue(label, value)
 	end
 	return l
 end
--- #no for later - get deafult form a pallete of colors (probably looping around)
-function backColor(entry, no)
+
+-- default colors
+local colorPalette = {
+    '#005744',
+    '#006c52',
+    '#00814e',
+    '#009649',
+    '#00ab45',
+    '#00c140',
+    '#00d93b',
+    '#00f038',
+}
+local lastColor = '#cdf099'
+function backColor(entry, no, totalCount)
     if (type(entry.color) == "string") then
     	-- Remove unsafe characters from entry.color
     	local sanitizedColor = entry.color:gsub("[^a-zA-Z0-9#%-]", "")
         return 'background-color: ' .. sanitizedColor
     else
-        return ''
+    	local color = lastColor
+    	if (no > 1) then 
+			local cIndex = (no - 1) % #colorPalette + 1
+			color = colorPalette[cIndex]
+    	end
+    	mw.log(no, color)
+        return 'background-color: ' .. color
     end
 end
 
