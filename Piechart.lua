@@ -22,6 +22,16 @@ local p = {}
 	local json_data = '[{"label": "k: $v", "value": 33.1, "color":"black"}, {"label": "m: $v", "value": -1, "color":"green"}]'
 	local html = p.renderPie(json_data)
 	mw.logObject(html)
+	
+	-- 3-cuts
+	local entries = {
+	    '{"label": "ciastka: $v", "value": 2, "color":"goldenrod"}',
+	    '{"label": "słodycze: $v", "value": 5, "color":"darkred"}',
+	    '{"label": "kanapki: $v", "value": 3, "color":"wheat"}'
+	}
+	local json_data = '['..table.concat(entries, ',')..']'
+	local html = p.renderPie(json_data, '{"autoscale"=true}')
+	mw.logObject(html)
 ]]
 
 --[[
