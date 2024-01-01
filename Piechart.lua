@@ -23,7 +23,7 @@ local p = {}
 	local html = p.renderPie(json_data)
 	mw.logObject(html)
 	
-	-- 3-cuts
+	-- 4-cuts
 	local entries = {
 	    '{"label": "ciastka: $v", "value": 2, "color":"goldenrod"}',
 	    '{"label": "słodycze: $v", "value": 4, "color":"darkred"}',
@@ -201,7 +201,7 @@ end
 -- style of a mask (rotate into place)
 function getMaskStyle(previous)
 	if (previous>0) then
-		local maskRotate = string.format("rotate(-%.3fturn)", previous/100)
+		local maskRotate = string.format("rotate(%.3fturn)", previous/100)
 		local maskStyle = 'style="transform: '..maskRotate..';"'
 		return maskStyle
 	end
