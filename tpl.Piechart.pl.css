@@ -5,30 +5,34 @@
 */
 /* base structure  */
 .smooth-pie {
-	clip-path: circle(50%);
-	position:relative;
-	display:block;
+	display: none;
+	position: relative;
 	width: 100px;
 	height: 100px;
-	box-sizing: border-box;
+	border-radius: 50%;
+	background-color: yellowgreen;
 }
 .smooth-pie div {
-	position:absolute;
-	display:none;
-	width: 100%;
+	position: absolute;
+	transform-origin: left bottom;
+	background-color: #655;
+
+	top: 0; left: 50%;
+	width: 50%; height: 50%;
+	border-radius: 0 500% 0 0;
+}
+.smooth-pie .pie50 {
+	transform-origin: left center;
 	height: 100%;
-	box-sizing: border-box;
+	border-radius: 0 100% 100% 0 / 50%;
 }
-/* 50-50 mask (right side shown) */
-.smooth-pie .piemask {
-	clip-path: polygon(50% 0%,
-						100% 0%,
-						100% 100%,
-						50% 100%);
-}
+.smooth-pie .pie12-5 {clip-path: polygon(0% 0%, 100% 0%, 0 100%);}
+.smooth-pie    .pie5 {clip-path: polygon(0% 0%, 32.49197% 0%, 0 100%);}
+.smooth-pie    .pie7 {clip-path: polygon(0% 0%, 47.056428% 0%, 0 100%);}
+.smooth-pie    .pie1 {clip-path: polygon(0% 0%, 6.2914667% 0%, 0 100%);}
 /* unlock for supported browsers */
 @supports(clip-path: circle(50%)) {
-	.smooth-pie div {
+	.smooth-pie {
 		display:block;
 	}	
 }
