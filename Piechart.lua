@@ -41,7 +41,7 @@ local p = {}
 	{{{1}}}: slice number
 ]]
 function p.color(frame)
-	local no = trim(frame.args[1])
+	local no = tonumber(trim(frame.args[1]))
 	return defaultColor(no)
 end
 
