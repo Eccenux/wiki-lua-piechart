@@ -33,6 +33,10 @@ local p = {}
 	local json_data = '['..table.concat(entries, ',')..']'
 	local html = p.renderPie(json_data, '{"autoscale":true}')
 	mw.logObject(html)
+	
+	-- colors
+	local fr = { args = { " 123 " } }
+	local ret = p.color(fr)
 ]]
 
 --[[
@@ -42,7 +46,7 @@ local p = {}
 ]]
 function p.color(frame)
 	local no = tonumber(trim(frame.args[1]))
-	return defaultColor(no)
+	return ' ' .. defaultColor(no)
 end
 
 --[[
