@@ -12,6 +12,7 @@
 	border-radius: 50%;
 	background-color: yellowgreen;
 }
+/* slices (default = pie25/pieX) */
 .smooth-pie div {
 	position: absolute;
 	transform-origin: left bottom;
@@ -35,4 +36,29 @@
 	.smooth-pie {
 		display:block;
 	}	
+}
+/* container and legend */
+.smooth-pie-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 1em;
+}
+.smooth-pie-legend {
+  list-style-type: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.smooth-pie-legend li {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+}
+.smooth-pie-legend li span {
+  display: block;
+  box-sizing: border-box;
+}
+.smooth-pie-legend li .l-color {
+  border: 1px solid black;
+  width: .8em;
+  height: .8em;
 }
