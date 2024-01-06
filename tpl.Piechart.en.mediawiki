@@ -29,4 +29,6 @@ Quick example with custom colors and a legend:
 |meta={"autoscale":true, "legend":true}
 }}
 
+== See also ==
+* [[Module:Piechart]]
 </noinclude>
