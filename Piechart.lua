@@ -136,7 +136,8 @@ function p.setupOptions(json_options)
 			if (type(rawOptions.direction) == "string") then
 				-- Remove unsafe/invalid characters
 				local sanitized = rawOptions.direction:gsub("[^a-z0-9%-]", "")
-				options.direction = 'flex-direction: ' .. sanitized
+				-- also adjust width so that row-reverse won't push things to the right
+				options.direction = 'width: max-content; flex-direction: ' .. sanitized
 			end
 		end
 	end
