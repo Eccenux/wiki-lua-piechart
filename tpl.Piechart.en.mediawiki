@@ -1,0 +1,9 @@
+<templatestyles src="Piechart/style.css"/>
+{{#invoke:Piechart|pie| {{{1|[
+ {"label": "wieś: $v", "value": 45}, 
+ {"label": "miasto: $v"}
+]}}}
+| meta = {{{meta|
+{}
+}}}
+}}
