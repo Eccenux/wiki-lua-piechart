@@ -7,28 +7,5 @@
 {}
 }}}
 }}<noinclude>
-See: [[Module:Piechart]]
-
-Quick example with custom colors and a legend:
-<syntaxhighlight lang="wikitext">
-{{Piechart| [
- {"label": "sweets: $v", "value": 5, "color":"darkred"},
- {"label": "sandwiches: $v", "value": 3, "color":"wheat"},
- {"label": "cookies: $v", "value": 2, "color":"goldenrod"},
- {"label": "drinks: $v", "value": 1, "color":"#ccf"}
-]
-|meta={"autoscale":true, "legend":true}
-}}
-</syntaxhighlight>
-{{Piechart| [
- {"label": "sweets: $v", "value": 5, "color":"darkred"},
- {"label": "sandwiches: $v", "value": 3, "color":"wheat"},
- {"label": "cookies: $v", "value": 2, "color":"goldenrod"},
- {"label": "drinks: $v", "value": 1, "color":"#ccf"}
-]
-|meta={"autoscale":true, "legend":true}
-}}
-
-== See also ==
-* [[Module:Piechart]]
+{{doc}}
 </noinclude>
