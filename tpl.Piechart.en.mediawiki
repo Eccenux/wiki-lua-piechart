@@ -9,5 +9,3 @@
 }}<noinclude>
 {{doc}}
 </noinclude>
-[[Category:Graph, chart and plot templates]]
-[[Category:Chart, diagram and graph formatting and function templates]]
