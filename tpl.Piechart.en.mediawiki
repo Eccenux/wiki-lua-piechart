@@ -1,7 +1,7 @@
-<templatestyles src="Piechart/style.css"/>
+<templatestyles src="Piechart/styles.css"/>
 {{#invoke:Piechart|pie| {{{1|[
- {"label": "wieś: $v", "value": 45}, 
- {"label": "miasto: $v"}
+ {"label": "villages: $v", "value": 45}, 
+ {"label": "cities: $v"}
 ]}}}
 | meta = {{{meta|
 {}
