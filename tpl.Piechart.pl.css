@@ -61,7 +61,7 @@
   box-sizing: border-box;
 }
 .smooth-pie-legend li .l-color {
-  border: 1px solid black;
+  border: 1px solid var(--color-base, black);
   width: .8em;
   height: .8em;
 }
