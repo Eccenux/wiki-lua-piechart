@@ -336,7 +336,7 @@ function renderFinal(entry, options)
 	local html = [[
 <div class="smooth-pie"
 	style="]]..style..[["
-	title="]]..label..[["
+	title="]]..p.extract_text(label)..[["
 	]]..aria..[[
 >]]
 	return html
@@ -408,7 +408,7 @@ function sliceBase(sizeClass, transform, bcolor, label)
 	if transform ~= "" then
         style = style .. '; ' .. transform
     end
-	return '\n\t<div class="'..sizeClass..'" style="'..style..'" title="'..label..'"></div>'
+	return '\n\t<div class="'..sizeClass..'" style="'..style..'" title="'..p.extract_text(label)..'"></div>'
 end
 
 -- small slice cut to fluid size.
@@ -416,7 +416,7 @@ end
 -- range in practice: 0 to 5%
 function sliceX(cut, transform, bcolor, label)
 	local path = 'clip-path: polygon(0% 0%, '..cut..'% 0%, 0 100%)'
-	return '\n\t<div style="'..transform..'; '..bcolor..'; '..path..'" title="'..label..'"></div>'
+	return '\n\t<div style="'..transform..'; '..bcolor..'; '..path..'" title="'..p.extract_text(label)..'"></div>'
 end
 
 -- translate value to turn rotation
@@ -519,6 +519,29 @@ end
 ]]
 function trim(s)
 	return (s:gsub("^%s+", ""):gsub("%s+$", ""))
+end
+
+--[[
+  Extract text from simple wikitext.
+  
+  For now only works with links.
+]]
+-- Tests:
+-- mw.log(p.extract_text("[[candy|sweets]]: $v"))
+-- mw.log(p.extract_text("[[sandwich]]es: $v"))
+-- mw.log(p.extract_text("sandwich]]es: $v"))
+-- mw.log(p.extract_text("sandwiches: $v"))
+function p.extract_text(label)
+    -- quick death mode
+    if not label:find("%[%[") then
+        return label
+    end
+    -- replace links with pipe (e.g., [[candy|sweets]])
+    label = label:gsub("%[%[[^|%]]+|(.-)%]%]", "%1")
+    -- replace simple links without pipe (e.g., [[sandwich]])
+    label = label:gsub("%[%[(.-)%]%]", "%1")
+    
+    return label
 end
 
 return p
