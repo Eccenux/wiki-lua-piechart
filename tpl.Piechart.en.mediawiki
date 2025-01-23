@@ -1,11 +1,16 @@
 <templatestyles src="Piechart/styles.css"/>
-{{#invoke:Piechart|pie| {{{1|[
+{{#ifeq:{{{thumb|none}}}|none|
+|<div class="pie-thumb thumb t{{#switch:{{{thumb|}}}|left=left|right=right}}"><div class="thumbinner">
+}}{{#if: {{{caption|}}} | {{{caption|}}} 
+|}}{{#invoke:Piechart|pie| {{{1|[
  {"label": "villages: $v", "value": 45}, 
  {"label": "cities: $v"}
 ]}}}
 | meta = {{{meta|
 {}
 }}}
+}}{{#ifeq:{{{thumb|none}}}|none|
+|</div></div>
 }}<noinclude>
 {{doc}}
 </noinclude>
