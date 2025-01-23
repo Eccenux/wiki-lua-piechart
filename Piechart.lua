@@ -493,10 +493,10 @@ function backColor(entry, no)
     if (type(entry.color) == "string") then
     	-- Remove unsafe characters from entry.color
     	local sanitizedColor = entry.color:gsub("[^a-zA-Z0-9#%-]", "")
-        return 'color:black; background-color: ' .. sanitizedColor
+        return 'background-color: ' .. sanitizedColor
     else
     	local color = defaultColor(no)
-        return 'color:black; background-color: ' .. color
+        return 'background-color: ' .. color
     end
 end
 -- color from the default colors
