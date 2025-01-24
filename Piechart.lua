@@ -472,12 +472,18 @@ function formatNum(value)
 	-- doesn't do precision :(
 	-- local v = lang:formatNum(value)
 	
-	local v = string.format("%.1f", value)
+	local v = ""
+	if (value < 10) then
+		v = string.format("%.2f", value)
+	else
+		v = string.format("%.1f", value)
+	end
 	if (lang:getCode() == 'pl') then
 		v = v:gsub("%.", ",")
 	end
 	return v
 end
+p._formatNum = formatNum
 
 --[[
 	Prepare final label.
