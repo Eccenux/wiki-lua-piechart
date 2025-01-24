@@ -135,7 +135,14 @@ function p.setupOptions(json_options)
 		legend = false,
 		-- direction of legend-chart flexbox (flex-direction)
 		direction = "",
-	}   
+		-- width of the main container
+		-- when direction is used defaults to max-width, otherwise it's not added
+		width = "",
+		-- caption above the labels
+		caption = "",
+	}
+	-- internals
+	options.style = ""
 	if json_options then
 		local rawOptions = mw.text.jsonDecode(json_options)
 		if rawOptions then
@@ -153,8 +160,24 @@ function p.setupOptions(json_options)
 				-- Remove unsafe/invalid characters
 				local sanitized = rawOptions.direction:gsub("[^a-z0-9%-]", "")
 				-- also adjust width so that row-reverse won't push things to the right
-				options.direction = 'width: max-content; flex-direction: ' .. sanitized
+				options.direction = 'flex-direction: ' .. sanitized .. ';'
+				options.width = 'width: max-content;'
 			end
+			if (type(rawOptions.width) == "string") then
+				-- note, this intentionaly overwrites what was set for direction
+				local sanitized = rawOptions.width:gsub("[^a-z0-9%-]", "")
+				options.width = 'width: ' .. sanitized .. ';'
+			end
+			if (type(rawOptions.caption) == "string") then
+				options.caption = rawOptions.caption
+			end
+		end
+		-- build style
+		if options.width ~= "" then
+			options.style = options.style .. options.width
+		end
+		if options.direction ~= "" then
+			options.style = options.style .. options.direction
 		end
 	end
 	if (options.legend) then
@@ -176,7 +199,7 @@ function p.renderPie(json_data, json_options)
 	local ok, total = p.prepareEntries(data, options)
 
 	-- init render
-	local html = "<div class='smooth-pie-container' style='"..options.direction.."'>"
+	local html = "<div class='smooth-pie-container' style='"..options.style.."'>"
 
 	-- error info
 	if not ok then
@@ -276,13 +299,22 @@ end
 
 -- render legend for pre-processed entries
 function p.renderLegend(data, options)
-	local html = "\n<ol class='smooth-pie-legend'>"
+	local html = ""
+	if options.caption ~= "" then
+		html = "\n<div class='smooth-pie-legend-container'>"
+		html = html .. "<div class='smooth-pie-caption'>" .. options.caption .. "</div>"
+	end
+	html = html .. "\n<ol class='smooth-pie-legend'>"
 	for _, entry in ipairs(data) do
 		if not entry.error then
 			html = html .. renderLegendItem(entry, options)
 		end
 	end
-	return html .. "\n</ol>\n"
+	html = html .. "\n</ol>\n"
+	if options.caption ~= "" then
+		html = html .. "</div>\n"
+	end
+	return html
 end
 -- render legend item
 function renderLegendItem(entry, options)
