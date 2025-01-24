@@ -1,6 +1,9 @@
 <templatestyles src="Piechart/styles.css"/>
 {{#ifeq:{{{thumb|none}}}|none|
-|<div class="pie-thumb thumb t{{#switch:{{{thumb|}}}|left=left|right=right}}"><div class="thumbinner">
+|<div 
+ class="pie-thumb thumb t{{#switch:{{{thumb|}}}|left=left|right=right}}"
+ {{#iferror: {{#expr: {{{thumb-size|}}} > 1 }} | | style="width:{{{thumb-size|}}}px" }}
+><div class="thumbinner">
 }}{{#if: {{{caption|}}} | {{{caption|}}} 
 |}}{{#invoke:Piechart|pie| {{{1|[
  {"label": "villages: $v", "value": 45}, 
