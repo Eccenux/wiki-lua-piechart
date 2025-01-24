@@ -11,6 +11,7 @@
 | meta = {{{meta|
 {}
 }}}
+| caption = {{{caption|}}}
 }}{{#ifeq:{{{thumb|none}}}|none|
 |</div></div>
 }}<noinclude>
