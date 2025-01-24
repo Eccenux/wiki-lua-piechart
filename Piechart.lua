@@ -113,9 +113,12 @@ end
 ]] 
 function p.pie(frame)
 	local json_data = trim(frame.args[1])
-	local options = nil
+	local options = {}
 	if (frame.args.meta) then
-		options = trim(frame.args.meta)
+		options.meta = trim(frame.args.meta)
+	end
+	if (frame.args.caption) then
+		options.caption = trim(frame.args.caption)
 	end
 	
 	local html = p.renderPie(json_data, options)
@@ -123,7 +126,7 @@ function p.pie(frame)
 end
 
 -- Setup chart options.
-function p.setupOptions(json_options)
+function p.setupOptions(user_options)
 	local options = {
 		-- circle size in [px]
 		size = 100,
@@ -143,8 +146,11 @@ function p.setupOptions(json_options)
 	}
 	-- internals
 	options.style = ""
-	if json_options then
-		local rawOptions = mw.text.jsonDecode(json_options)
+	if user_options.caption then
+		options.caption = user_options.caption
+	end
+	if user_options.meta then
+		local rawOptions = mw.text.jsonDecode(user_options.meta)
 		if rawOptions then
 			if type(rawOptions.size) == "number" then
 				options.size = math.floor(rawOptions.size)
@@ -191,9 +197,9 @@ end
 	
 	@param json_data JSON string with pie data.
 ]]
-function p.renderPie(json_data, json_options)
+function p.renderPie(json_data, user_options)
 	local data = mw.text.jsonDecode(json_data)
-	local options = p.setupOptions(json_options)
+	local options = p.setupOptions(user_options)
 
 	-- prepare
 	local ok, total = p.prepareEntries(data, options)
