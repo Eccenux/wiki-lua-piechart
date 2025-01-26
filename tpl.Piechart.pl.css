@@ -64,6 +64,7 @@
   border: 1px solid var(--color-base, black);
   width: .8em;
   height: .8em;
+  flex-shrink: 0;
 }
 /* floating pie */
 .pie-thumb .smooth-pie-container {
