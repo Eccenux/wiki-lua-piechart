@@ -53,7 +53,7 @@
 }
 .smooth-pie-legend li {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: .5em;
 }
 .smooth-pie-legend li span {
