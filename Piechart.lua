@@ -1,4 +1,5 @@
 local p = {}
+local forPrinting = "-webkit-print-color-adjust: exact; print-color-adjust: exact;"
 --[[
 	Smooth piechart module.
 
@@ -327,7 +328,7 @@ function renderLegendItem(entry, options)
 	local label = entry.label
 	local bcolor = entry.bcolor
 	local html = "\n<li>"
-	html = html .. '<span class="l-color" style="'..bcolor..'"></span>'
+	html = html .. '<span class="l-color" style="'..forPrinting..bcolor..'"></span>'
 	html = html .. '<span class="l-label">'..label..'</span>'
 	return html .. "</li>"
 end
@@ -370,7 +371,7 @@ function renderFinal(entry, options)
 	end
 
 	-- slices container and last slice
-	local style = 'width:'..size..'px; height:'..size..'px;'..bcolor
+	local style = 'width:'..size..'px; height:'..size..'px;'..bcolor..';'..forPrinting
 	local html = [[
 <div class="smooth-pie"
 	style="]]..style..[["
@@ -446,7 +447,7 @@ function sliceBase(sizeClass, transform, bcolor, label)
 	if transform ~= "" then
         style = style .. '; ' .. transform
     end
-	return '\n\t<div class="'..sizeClass..'" style="'..style..'" title="'..p.extract_text(label)..'"></div>'
+	return '\n\t<div class="'..sizeClass..'" style="'..forPrinting..style..'" title="'..p.extract_text(label)..'"></div>'
 end
 
 -- small slice cut to fluid size.
@@ -454,7 +455,7 @@ end
 -- range in practice: 0 to 5%
 function sliceX(cut, transform, bcolor, label)
 	local path = 'clip-path: polygon(0% 0%, '..cut..'% 0%, 0 100%)'
-	return '\n\t<div style="'..transform..'; '..bcolor..'; '..path..'" title="'..p.extract_text(label)..'"></div>'
+	return '\n\t<div style="'..transform..'; '..forPrinting..bcolor..'; '..path..'" title="'..p.extract_text(label)..'"></div>'
 end
 
 -- translate value to turn rotation
@@ -540,7 +541,7 @@ function backColor(entry, no)
         return 'background-color: ' .. sanitizedColor
     else
     	local color = defaultColor(no)
-        return 'background-color: ' .. color
+        return forPrinting .. 'background-color: ' .. color
     end
 end
 -- color from the default colors
