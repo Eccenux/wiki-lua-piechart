@@ -1,4 +1,5 @@
 local p = {}
+-- require exact colors for printing
 local forPrinting = "-webkit-print-color-adjust: exact; print-color-adjust: exact;"
 --[[
 	Smooth piechart module.
@@ -447,7 +448,7 @@ function sliceBase(sizeClass, transform, bcolor, label)
 	if transform ~= "" then
         style = style .. '; ' .. transform
     end
-	return '\n\t<div class="'..sizeClass..'" style="'..forPrinting..style..'" title="'..p.extract_text(label)..'"></div>'
+	return '\n\t<div class="'..sizeClass..'" style="'..style..'" title="'..p.extract_text(label)..'"></div>'
 end
 
 -- small slice cut to fluid size.
@@ -455,7 +456,7 @@ end
 -- range in practice: 0 to 5%
 function sliceX(cut, transform, bcolor, label)
 	local path = 'clip-path: polygon(0% 0%, '..cut..'% 0%, 0 100%)'
-	return '\n\t<div style="'..transform..'; '..forPrinting..bcolor..'; '..path..'" title="'..p.extract_text(label)..'"></div>'
+	return '\n\t<div style="'..transform..'; '..bcolor..'; '..path..'" title="'..p.extract_text(label)..'"></div>'
 end
 
 -- translate value to turn rotation
@@ -541,7 +542,7 @@ function backColor(entry, no)
         return 'background-color: ' .. sanitizedColor
     else
     	local color = defaultColor(no)
-        return forPrinting .. 'background-color: ' .. color
+        return 'background-color: ' .. color
     end
 end
 -- color from the default colors
