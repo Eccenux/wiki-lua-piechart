@@ -67,8 +67,27 @@
   flex-shrink: 0;
 }
 /* floating pie */
+.pie-thumb {
+	display:flex;
+}
 .pie-thumb .smooth-pie-container {
 	padding: .5em;
 	padding-bottom: 0;
 	text-align: left;
+}
+.pie-thumb .smooth-pie-caption {
+	margin-bottom: 1em;
+	font-size: 94%;
+}
+
+@media print {
+	/*
+	  Avoid breaking up the chart.
+	  
+	  Otherwise if the pie chart crosses a page line, 
+	  the slices can end up e.g. squished to the bottom of the page.
+	*/
+	.smooth-pie-container {
+		break-inside: avoid-page;
+	}
 }
