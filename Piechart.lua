@@ -300,7 +300,8 @@ function prepareSlice(entry, no, sum, total, options)
 	if no == total then
 		index = -1
 	end
-	entry.bcolor = backColor(entry, index)
+	-- background, but also color for MW syntax linter
+	entry.bcolor = backColor(entry, index) .. ";color:#000"
 
 	return true
 end
@@ -326,6 +327,11 @@ function p.renderLegend(data, options)
 end
 -- render legend item
 function renderLegendItem(entry, options)
+	-- invisible value (for a11y reasons this should not be used for important values!)
+	if entry.visible ~= nil and entry.visible == false then
+		return ""
+	end
+
 	local label = entry.label
 	local bcolor = entry.bcolor
 	local html = "\n<li>"
@@ -372,7 +378,7 @@ function renderFinal(entry, options)
 	end
 
 	-- slices container and last slice
-	local style = 'width:'..size..'px; height:'..size..'px;'..bcolor..';'..forPrinting
+	local style = 'width:'..size..'px;height:'..size..'px;'..bcolor..';'..forPrinting
 	local html = [[
 <div class="smooth-pie"
 	style="]]..style..[["
@@ -523,26 +529,35 @@ function prepareLabel(tpl, entry)
 end
 
 -- default colors
+-- source: https://colorbrewer2.org/#type=diverging&scheme=PRGn&n=6
 local colorPalette = {
-    '#005744',
-    '#006c52',
-    '#00814e',
-    '#009649',
-    '#00ab45',
-    '#00c140',
-    '#00d93b',
-    '#00f038',
+-- green (from dark)
+'#1b7837',
+'#7fbf7b',
+'#d9f0d3',
+-- violet
+'#762a83',
+'#af8dc3',
+'#e7d4e8',
+-- red
+'#d73027',
+'#fc8d59',
+'#fee090',
+-- blue
+'#4575b4',
+'#91bfdb',
+'#e0f3f8',
 }
-local lastColor = '#cdf099'
+local lastColor = '#fff'
 -- background color from entry or the default colors
 function backColor(entry, no)
     if (type(entry.color) == "string") then
     	-- Remove unsafe characters from entry.color
     	local sanitizedColor = entry.color:gsub("[^a-zA-Z0-9#%-]", "")
-        return 'background-color: ' .. sanitizedColor
+        return 'background:' .. sanitizedColor
     else
     	local color = defaultColor(no)
-        return 'background-color: ' .. color
+        return 'background:' .. color
     end
 end
 -- color from the default colors
@@ -608,6 +623,7 @@ function p.parseEnumParams(frame)
     
     local i = 1
 	local sum = 0.0
+	local hasCustomColor = false -- has last custom color
     while args["value" .. i] do
         -- value is required in this mode; it's also assumed to be 0..100
         local entry = { value = tonumber(args["value" .. i]) or 0 }
@@ -615,8 +631,10 @@ function p.parseEnumParams(frame)
         if args["label" .. i] and args["label" .. i] ~= "" then
             entry.label = args["label" .. i] .. " ("..entry.value.."%)"
         end
+        hasCustomColor = false
         if args["color" .. i] and args["color" .. i] ~= "" then
             entry.color = args["color" .. i]
+            hasCustomColor = true
         end
         table.insert(result, entry)
         sum = sum + entry.value
@@ -624,18 +642,31 @@ function p.parseEnumParams(frame)
     end
     
     -- support other value mapping
+	local lang = mw.language.getContentLanguage()
+	local langOther = "Other"
+	if (lang:getCode() == 'pl') then
+		langOther = "Inne"
+	end
+	local colorOther = "#FEFDFD" -- white-ish for custom colors for best chance and contrast
+	
     if args["other"] and args["other"] ~= "" then
 		local value = 100 - sum
 		if value < 0 then
 			value = 0
 		end
-        local otherEntry = { label = (args["other-label"] or "Other") .. " ("..formatNum(value).."%)" }
+        local otherEntry = { label = (args["other-label"] or langOther) .. " ("..formatNum(value).."%)" }
         if args["other-color"] and args["other-color"] ~= "" then
             otherEntry.color = args["other-color"]
         else
-        	otherEntry.color = "#FEFDFD"
+        	otherEntry.color = colorOther
         end
         table.insert(result, otherEntry)
+    elseif sum < 100 then
+    	if hasCustomColor then
+        	table.insert(result, {visible = false, label = langOther .. " ($v)", color = colorOther})
+        else
+        	table.insert(result, {visible = false, label = langOther .. " ($v)"})
+        end
 	end
     
     local jsonString = mw.text.jsonEncode(result)
