@@ -12,6 +12,7 @@
 	border-radius: 50%;
 	background-color: yellowgreen;
 	color:black;
+	border: 1px solid black;
 }
 /* slices (default = pie25/pieX) */
 .smooth-pie div {
