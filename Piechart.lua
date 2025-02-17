@@ -152,7 +152,7 @@ function p.setupOptions(user_options)
 		options.caption = user_options.caption
 	end
 	if user_options.meta then
-		local rawOptions = mw.text.jsonDecode(user_options.meta)
+		local rawOptions = mw.text.jsonDecode(user_options.meta, mw.text.JSON_TRY_FIXING)
 		if rawOptions then
 			if type(rawOptions.size) == "number" then
 				options.size = math.floor(rawOptions.size)
@@ -200,7 +200,7 @@ end
 	@param json_data JSON string with pie data.
 ]]
 function p.renderPie(json_data, user_options)
-	local data = mw.text.jsonDecode(json_data)
+	local data = mw.text.jsonDecode(json_data, mw.text.JSON_TRY_FIXING)
 	local options = p.setupOptions(user_options)
 
 	-- prepare
@@ -523,21 +523,17 @@ function prepareLabel(tpl, entry)
 end
 
 -- default colors
--- source: https://colorbrewer2.org/?type=diverging&scheme=PRGn&n=11
 local colorPalette = {
-	'#00441b',
-	'#1b7837',
-	'#5aae61',
-	'#a6dba0',
-	'#f7f7f7',
-	'#e7d4e8',
-	'#c2a5cf',
-	'#9970ab',
-	'#762a83',
-	'#40004b',
+    '#005744',
+    '#006c52',
+    '#00814e',
+    '#009649',
+    '#00ab45',
+    '#00c140',
+    '#00d93b',
+    '#00f038',
 }
-local lastColor = '#d9f0d3'
-
+local lastColor = '#cdf099'
 -- background color from entry or the default colors
 function backColor(entry, no)
     if (type(entry.color) == "string") then
@@ -592,6 +588,58 @@ function p.extract_text(label)
     label = label:gsub("%[%[(.-)%]%]", "%1")
     
     return label
+end
+
+--[[
+  Parse classic template params into JSON.
+
+From:  
+|label1=cookies: $v |value1=11 |color1=goldenrod
+|label2=sweets: $v |value2=20 |color2=darkred
+
+To:
+{"value":11,"color":"goldenrod","label":"cookies: $v"},
+{"value":20,"color":"darkred","label":"sweets: $v"},
+
+]]
+function p.parseEnumParams(frame)
+    local args = frame:getParent().args
+    local result = {}
+    
+    local i = 1
+	local sum = 0.0
+    while args["value" .. i] do
+        -- value is required in this mode; it's also assumed to be 0..100
+        local entry = { value = tonumber(args["value" .. i]) or 0 }
+        -- label and color is optional
+        if args["label" .. i] and args["label" .. i] ~= "" then
+            entry.label = args["label" .. i] .. " ("..entry.value.."%)"
+        end
+        if args["color" .. i] and args["color" .. i] ~= "" then
+            entry.color = args["color" .. i]
+        end
+        table.insert(result, entry)
+        sum = sum + entry.value
+        i = i + 1
+    end
+    
+    -- support other value mapping
+    if args["other"] and args["other"] ~= "" then
+		local value = 100 - sum
+		if value < 0 then
+			value = 0
+		end
+        local otherEntry = { label = (args["other-label"] or "Other") .. " ("..formatNum(value).."%)" }
+        if args["other-color"] and args["other-color"] ~= "" then
+            otherEntry.color = args["other-color"]
+        else
+        	otherEntry.color = "#FEFDFD"
+        end
+        table.insert(result, otherEntry)
+	end
+    
+    local jsonString = mw.text.jsonEncode(result)
+    return jsonString
 end
 
 return p
