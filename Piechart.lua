@@ -276,6 +276,7 @@ function renderErrors(data)
 end
 
 -- Prepare single slice data (modifies entry).
+-- @param no = 1..total
 function prepareSlice(entry, no, sum, total, options)
 	local autoscale = options.autoscale
 	local value = entry.value
@@ -295,13 +296,8 @@ function prepareSlice(entry, no, sum, total, options)
 
 	-- prepare final label
 	entry.label = prepareLabel(entry.label, entry)
-	-- prepare final slice bg color
-	local index = no
-	if no == total then
-		index = -1
-	end
 	-- background, but also color for MW syntax linter
-	entry.bcolor = backColor(entry, index) .. ";color:#000"
+	entry.bcolor = backColor(entry, no, total) .. ";color:#000"
 
 	return true
 end
@@ -530,6 +526,8 @@ end
 
 -- default colors
 -- source: https://colorbrewer2.org/#type=diverging&scheme=PRGn&n=6
+local colorGroupSize = 3 -- must be at least 3
+local colorGroups = 4
 local colorPalette = {
 -- green (from dark)
 '#1b7837',
@@ -550,25 +548,68 @@ local colorPalette = {
 }
 local lastColor = '#fff'
 -- background color from entry or the default colors
-function backColor(entry, no)
+function backColor(entry, no, total)
     if (type(entry.color) == "string") then
     	-- Remove unsafe characters from entry.color
     	local sanitizedColor = entry.color:gsub("[^a-zA-Z0-9#%-]", "")
         return 'background:' .. sanitizedColor
     else
-    	local color = defaultColor(no)
+    	local color = defaultColor(no, total)
         return 'background:' .. color
     end
 end
 -- color from the default colors
--- last entry color for 0 or -1
-function defaultColor(no)
+function defaultColor(no, total)
 	local color = lastColor
-	if (no > 0) then 
-		local cIndex = (no - 1) % #colorPalette + 1
-		color = colorPalette[cIndex]
+	local size = #colorPalette
+	if not total or total == 0 then
+		total = size + 1
+	end
+	local colorNo = defaultColorNo(no, total, size)
+	if colorNo > 0 then
+		color = colorPalette[colorNo]
 	end
 	return color
+end
+-- gets color number from default colors
+-- trys to return a light color as the last one
+-- 0 means white-ish color should be used
+function defaultColorNo(no, total, size)
+	local color = 0 -- special, lastColor
+	if total == 1 then
+		color = 1
+	elseif total <= colorGroupSize * (colorGroups - 1) then
+		if no < total then
+			color = no
+		else
+			local groupIndex = ((no - 1) % colorGroupSize)
+			if groupIndex == 0 then -- dark
+				color = no+1
+			elseif groupIndex == 1 then -- med
+				color = no+1
+			else
+				color = no
+			end
+		end
+	elseif no < total then
+		color = ((no - 1) % size) + 1
+	end
+	return color
+end
+--[[
+	Testing defaultColorNo:
+	p.test_defaultColorNo(1, 12)
+	p.test_defaultColorNo(2, 12)
+	p.test_defaultColorNo(3, 12)
+	p.test_defaultColorNo(4, 12)
+	p.test_defaultColorNo(5, 12)
+	p.test_defaultColorNo(6, 12)
+]]
+function p.test_defaultColorNo(total, size)
+	for no=1,total do
+		local color = defaultColorNo(no, total, size)
+		mw.logObject({no=no, color=color})
+	end
 end
 
 --[[
