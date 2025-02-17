@@ -523,17 +523,21 @@ function prepareLabel(tpl, entry)
 end
 
 -- default colors
+-- source: https://colorbrewer2.org/?type=diverging&scheme=PRGn&n=11
 local colorPalette = {
-    '#005744',
-    '#006c52',
-    '#00814e',
-    '#009649',
-    '#00ab45',
-    '#00c140',
-    '#00d93b',
-    '#00f038',
+	'#00441b',
+	'#1b7837',
+	'#5aae61',
+	'#a6dba0',
+	'#f7f7f7',
+	'#e7d4e8',
+	'#c2a5cf',
+	'#9970ab',
+	'#762a83',
+	'#40004b',
 }
-local lastColor = '#cdf099'
+local lastColor = '#d9f0d3'
+
 -- background color from entry or the default colors
 function backColor(entry, no)
     if (type(entry.color) == "string") then
