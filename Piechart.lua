@@ -561,6 +561,9 @@ end
 -- color from the default colors
 function defaultColor(no, total)
 	local color = lastColor
+	if no <= 0 then
+		return color
+	end
 	local size = #colorPalette
 	if not total or total == 0 then
 		total = size + 1
