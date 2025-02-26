@@ -735,6 +735,17 @@ function p.parseEnumParams(frame)
     return jsonString
 end
 
+-- Function to check if a value is true-ish
+local trueValues = { ["true"] = true, ["1"] = true, ["on"] = true, ["yes"] = true }
+function isTrueishValue(value)
+	-- should return nil for empty args (i.e. undefined i.e. default)
+    if not value or value == "" then return nil end
+    value = trim(value)
+    if value == "" then return nil end
+    -- other non-empty are false
+    return trueValues[value:lower()] or false
+end
+
 --[[
   Parse classic template params into JSON with chart meta data.
 ]]
@@ -760,9 +771,9 @@ function p.parseMetaParams(frame)
 	if args["radius"] and tonumber(args["radius"]) then
 	    meta.size = 2 * tonumber(args["radius"])
 	end
-    if args["autoscale"] then meta.autoscale = args["autoscale"] == "true" end
-    if args["legend"] then meta.legend = args["legend"] == "true" end
-    if args["ariahidechart"] then meta.ariahidechart = args["ariahidechart"] == "true" end
+    if args["autoscale"] then meta.autoscale = isTrueishValue(args["autoscale"]) end
+    if args["legend"] then meta.legend = isTrueishValue(args["legend"]) end
+    if args["ariahidechart"] then meta.ariahidechart = isTrueishValue(args["ariahidechart"]) end
     if args["direction"] and args["direction"] ~= "" then
         meta.direction = args["direction"]:gsub("[^a-z0-9%-]", "")
     end
