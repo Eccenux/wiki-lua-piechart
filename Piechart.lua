@@ -119,10 +119,7 @@ function p.pie(frame)
 	if (frame.args.meta) then
 		options.meta = trim(frame.args.meta)
 	end
-	if (frame.args.caption) then
-		options.caption = trim(frame.args.caption)
-	end
-	
+
 	local html = p.renderPie(json_data, options)
 	return trim(html)
 end
@@ -145,12 +142,11 @@ function p.setupOptions(user_options)
 		width = "",
 		-- caption above the labels
 		caption = "",
+		-- footer below the labels
+		footer = "",
 	}
 	-- internals
 	options.style = ""
-	if user_options.caption then
-		options.caption = user_options.caption
-	end
 	if user_options.meta then
 		local rawOptions = mw.text.jsonDecode(user_options.meta, mw.text.JSON_TRY_FIXING)
 		if rawOptions then
@@ -178,6 +174,9 @@ function p.setupOptions(user_options)
 			end
 			if (type(rawOptions.caption) == "string") then
 				options.caption = rawOptions.caption
+			end
+			if (type(rawOptions.footer) == "string") then
+				options.footer = rawOptions.footer
 			end
 		end
 		-- build style
@@ -305,8 +304,10 @@ end
 -- render legend for pre-processed entries
 function p.renderLegend(data, options)
 	local html = ""
-	if options.caption ~= "" then
+	if options.caption ~= "" or options.footer ~= "" then
 		html = "\n<div class='smooth-pie-legend-container'>"
+	end
+	if options.caption ~= "" then
 		html = html .. "<div class='smooth-pie-caption'>" .. options.caption .. "</div>"
 	end
 	html = html .. "\n<ol class='smooth-pie-legend'>"
@@ -316,7 +317,10 @@ function p.renderLegend(data, options)
 		end
 	end
 	html = html .. "\n</ol>\n"
-	if options.caption ~= "" then
+	if options.footer ~= "" then
+		html = html .. "<div class='smooth-pie-footer'>" .. options.footer .. "</div>"
+	end
+	if options.caption ~= "" or options.footer ~= "" then
 		html = html .. "</div>\n"
 	end
 	return html
@@ -672,19 +676,33 @@ function p.parseEnumParams(frame)
         -- value is required in this mode; it's also assumed to be 0..100
         local entry = { value = tonumber(args["value" .. i]) or 0 }
         -- label and color is optional
-        if args["label" .. i] and args["label" .. i] ~= "" then
-            entry.label = args["label" .. i] .. " ("..entry.value.."%)"
-        end
+		local label = args["label" .. i]
+		if label and label ~= "" then
+		    entry.label = label
+		end
         hasCustomColor = false
-        if args["color" .. i] and args["color" .. i] ~= "" then
-            entry.color = args["color" .. i]
+		local color = args["color" .. i]
+		if color and color ~= "" then
+		    entry.color = color
             hasCustomColor = true
         end
         table.insert(result, entry)
         sum = sum + entry.value
         i = i + 1
     end
-    
+    -- re-loop to set values in labels
+	for _, entry in ipairs(result) do
+	    local label = entry.label
+	    if label and not label:find("%$v") then
+	    	-- autoscale will be forced, so use $v in labels
+	    	if sum > 100 then
+		        entry.label = label .. " $v"
+		    else
+		        entry.label = label .. " (" .. entry.value .. "%)"
+	    	end
+	    end
+	end
+
     -- support other value mapping
 	local lang = mw.language.getContentLanguage()
 	local langOther = "Other"
@@ -715,6 +733,44 @@ function p.parseEnumParams(frame)
     
     local jsonString = mw.text.jsonEncode(result)
     return jsonString
+end
+
+--[[
+  Parse classic template params into JSON with chart meta data.
+]]
+function p.parseMetaParams(frame)
+    local args = frame:getParent().args
+    local meta = {}
+
+	-- default meta for value1..n parameters
+	if args["value1"] then
+	    meta.direction = "column-reverse"
+	    meta.width = "min-content"
+	    meta.size = 200
+	    meta.legend = true
+	end
+
+    if args["size"] then meta.size = tonumber(args["size"]) end
+	if args["radius"] and tonumber(args["radius"]) then
+	    meta.size = 2 * tonumber(args["radius"])
+	end
+    if args["autoscale"] then meta.autoscale = args["autoscale"] == "true" end
+    if args["legend"] then meta.legend = args["legend"] == "true" end
+    if args["ariahidechart"] then meta.ariahidechart = args["ariahidechart"] == "true" end
+    if args["direction"] and args["direction"] ~= "" then
+        meta.direction = args["direction"]:gsub("[^a-z0-9%-]", "")
+    end
+    if args["width"] and args["width"] ~= "" then
+        meta.width = args["width"]:gsub("[^a-z0-9%-]", "")
+    end
+    if args["caption"] and args["caption"] ~= "" then
+        meta.caption = args["caption"]
+    end
+    if args["footer"] and args["footer"] ~= "" then
+        meta.footer = args["footer"]
+    end
+
+    return mw.text.jsonEncode(meta)
 end
 
 return p
