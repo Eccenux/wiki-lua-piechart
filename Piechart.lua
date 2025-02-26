@@ -750,6 +750,12 @@ function p.parseMetaParams(frame)
 	    meta.legend = true
 	end
 
+	-- explicit meta param
+	if args["meta"] then
+	    meta = mw.text.jsonDecode(args["meta"], mw.text.JSON_TRY_FIXING)
+	end
+
+
     if args["size"] then meta.size = tonumber(args["size"]) end
 	if args["radius"] and tonumber(args["radius"]) then
 	    meta.size = 2 * tonumber(args["radius"])
