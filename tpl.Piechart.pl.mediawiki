@@ -3,10 +3,7 @@
  {"label": "wieś: $v", "value": 45}, 
  {"label": "miasto: $v"}
 ]}}}
-| meta = {{{meta|
-{}
-}}}
-| caption = {{{caption|}}}
+| meta = {{#invoke:Piechart|parseMetaParams}}
 }}<noinclude>
 {{Dokumentacja
  | Moduł:Piechart/opis
