@@ -19,8 +19,7 @@
 </noinclude>
 }}{{#ifeq:{{{thumb|right}}}|none|
 |</div></div>
-}}
-<noinclude>
+}}<noinclude>
 {{documentation}}
 <!-- Add categories to the /doc subpage, interwikis to Wikidata.  -->
 </noinclude>
