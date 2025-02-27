@@ -4,12 +4,12 @@
  class="pie-thumb thumb t{{#switch:{{{thumb|right}}}|left=left|right=right}}"
  {{#iferror: {{#expr: {{{thumb-size|}}} > 1 }} | | style="width:{{{thumb-size|}}}px" }}
 ><div class="thumbinner">
-}}{{#invoke:Piechart|pie|1={{#if:{{{1|<noinclude>show</noinclude>}}}
+}}{{#invoke:Piechart|pie|1={{#if:{{{value1|}}}
+ |<!-- enum-values mode -->{{#invoke:Piechart|parseEnumParams}}
  |<!-- JSON mode -->{{{1|<noinclude>[
  {"label": "villages: $v", "value": 45}, 
  {"label": "cities: $v"},
 ]</noinclude>}}}
- |<!-- enum-values mode -->{{#invoke:Piechart|parseEnumParams}}
  }}
 | meta = <includeonly>{{#invoke:Piechart|parseMetaParams}}</includeonly>
 <noinclude>
