@@ -17,7 +17,7 @@ local forPrinting = "-webkit-print-color-adjust: exact; print-color-adjust: exac
 		{ "label": "mixed pizza: $v", "color": "#f60", "value": 20 },
 		{ "label": "raw pizza $v", "color": "#f30" }
 	]
-    Where $v is a formatted number (see `function prepareLabel`).
+	Where $v is a formatted number (see `function prepareLabel`).
 
 	{{{meta}}}:
 		{"size":200, "autoscale":false, "legend":true}
@@ -51,10 +51,10 @@ local forPrinting = "-webkit-print-color-adjust: exact; print-color-adjust: exac
 	
 	-- 4-cuts
 	local entries = {
-	    '{"label": "ciastka: $v", "value": 2, "color":"goldenrod"}',
-	    '{"label": "słodycze: $v", "value": 4, "color":"darkred"}',
-	    '{"label": "napoje: $v", "value": 1, "color":"lightblue"}',
-	    '{"label": "kanapki: $v", "value": 3, "color":"wheat"}'
+		'{"label": "ciastka: $v", "value": 2, "color":"goldenrod"}',
+		'{"label": "słodycze: $v", "value": 4, "color":"darkred"}',
+		'{"label": "napoje: $v", "value": 1, "color":"lightblue"}',
+		'{"label": "kanapki: $v", "value": 3, "color":"wheat"}'
 	}
 	local json_data = '['..table.concat(entries, ',')..']'
 	local html = p.renderPie(json_data, '{"autoscale":true}')
@@ -78,41 +78,41 @@ end
 --[[
 	Piechart.
 	
-    TODO:
-    - [x] basic 2-element pie chart
-        - read json
-        - calculate value with -1
-        - generate html
-        - new css + tests
-        - provide dumb labels (just v%)
-    - [x] colors in json
-    - [x] 1st value >= 50%
-    - [x] custom labels support
-    - [x] pie size from 'meta' param (options json)
-    - [x] pl formatting for numbers?
-    - [x] support undefined value (instead of -1)
-    - [x] undefined in any order
-    - [x] scale values to 100% (autoscale)
-    - [x] order values clockwise (not left/right)
-    - [x] multi-cut pie
-    - [x] sanitize user values
-    - [x] auto colors
-    - [x] function to get color by number (for custom legend)
+	TODO:
+	- [x] basic 2-element pie chart
+		- read json
+		- calculate value with -1
+		- generate html
+		- new css + tests
+		- provide dumb labels (just v%)
+	- [x] colors in json
+	- [x] 1st value >= 50%
+	- [x] custom labels support
+	- [x] pie size from 'meta' param (options json)
+	- [x] pl formatting for numbers?
+	- [x] support undefined value (instead of -1)
+	- [x] undefined in any order
+	- [x] scale values to 100% (autoscale)
+	- [x] order values clockwise (not left/right)
+	- [x] multi-cut pie
+	- [x] sanitize user values
+	- [x] auto colors
+	- [x] function to get color by number (for custom legend)
 	- [x] remember and show autoscaled data
-    - [x] generate a legend
+	- [x] generate a legend
 	- [x] simple legend positioning by (flex-)direction
-    - legend2: customization
+	- legend2: customization
 		- (?) itemTpl support
 			- replace default item with tpl
 			- can I / should I sanitize it?
 			- support for $v, $d, $p
 		- (?) custom head
-    - (?) validation of input
+	- (?) validation of input
 		- check if required values are present
 		- message showing whole entry, when entry is invalid
 		- pre-sanitize values?
 		- sane info when JSON fails? Maybe dump JSON and show example with quotes-n-all...
-    - (?) option to sort entries by value
+	- (?) option to sort entries by value
 ]] 
 function p.pie(frame)
 	local json_data = priv.trim(frame.args[1])
@@ -257,7 +257,7 @@ function priv.sumValues(data)
 	for _, entry in ipairs(data) do
 		local value = entry.value
 		if not (type(value) ~= "number" or value < 0) then
-		    sum = sum + value
+			sum = sum + value
 		end
 	end
 	return sum
@@ -418,7 +418,7 @@ function priv.renderOther(previous, entry, options)
 		-- 0-5%
 		local cutIndex = priv.round(value*10)
 		if cutIndex < 1 then
-		    cutIndex = 1
+			cutIndex = 1
 		end
 		local cut = p.cuts[cutIndex]
 		local transform = priv.rotation(previous)
@@ -431,7 +431,7 @@ end
 
 -- round to int
 function priv.round(number)
-    return math.floor(number + 0.5)
+	return math.floor(number + 0.5)
 end
 
 -- render full slice with specific class
@@ -453,8 +453,8 @@ end
 function priv.sliceBase(sizeClass, transform, bcolor, label)
 	local style = bcolor
 	if transform ~= "" then
-        style = style .. '; ' .. transform
-    end
+		style = style .. '; ' .. transform
+	end
 	return '\n\t<div class="'..sizeClass..'" style="'..style..'" title="'..p.extract_text(label)..'"></div>'
 end
 
@@ -554,14 +554,14 @@ local colorPalette = {
 local lastColor = '#fff'
 -- background color from entry or the default colors
 function priv.backColor(entry, no, total)
-    if (type(entry.color) == "string") then
-    	-- Remove unsafe characters from entry.color
-    	local sanitizedColor = entry.color:gsub("[^a-zA-Z0-9#%-]", "")
-        return 'background:' .. sanitizedColor
-    else
-    	local color = priv.defaultColor(no, total)
-        return 'background:' .. color
-    end
+	if (type(entry.color) == "string") then
+		-- Remove unsafe characters from entry.color
+		local sanitizedColor = entry.color:gsub("[^a-zA-Z0-9#%-]", "")
+		return 'background:' .. sanitizedColor
+	else
+		local color = priv.defaultColor(no, total)
+		return 'background:' .. color
+	end
 end
 -- color from the default colors
 function priv.defaultColor(no, total)
@@ -642,19 +642,19 @@ end
 -- mw.log(p.extract_text("sandwich]]es: $v"))
 -- mw.log(p.extract_text("sandwiches: $v"))
 function p.extract_text(label)
-    label = label
-	    -- replace links with pipe (e.g., [[candy|sweets]])
-    	:gsub("%[%[[^|%]]+|(.-)%]%]", "%1")
-    	-- replace simple links without pipe (e.g., [[sandwich]])
-    	:gsub("%[%[(.-)%]%]", "%1")
-    	-- remove templates?
-    	-- :gsub("{.-}", "")
-    	-- remove tags
-    	:gsub("<[^>]+>", "")
-    	-- escape special chars just in case
-    	:gsub("<", "&lt;"):gsub(">", "&gt;")
-    	:gsub("'", "&#39;"):gsub("\"", "&quot;")
-    return label
+	label = label
+		-- replace links with pipe (e.g., [[candy|sweets]])
+		:gsub("%[%[[^|%]]+|(.-)%]%]", "%1")
+		-- replace simple links without pipe (e.g., [[sandwich]])
+		:gsub("%[%[(.-)%]%]", "%1")
+		-- remove templates?
+		-- :gsub("{.-}", "")
+		-- remove tags
+		:gsub("<[^>]+>", "")
+		-- escape special chars just in case
+		:gsub("<", "&lt;"):gsub(">", "&gt;")
+		:gsub("'", "&#39;"):gsub("\"", "&quot;")
+	return label
 end
 
 --[[
@@ -670,44 +670,44 @@ To:
 
 ]]
 function p.parseEnumParams(frame)
-    local args = frame:getParent().args
-    local result = {}
-    
-    local i = 1
+	local args = frame:getParent().args
+	local result = {}
+	
+	local i = 1
 	local sum = 0.0
 	local hasCustomColor = false -- has last custom color
-    while args["value" .. i] do
-        -- value is required in this mode; it's also assumed to be 0..100
-        local entry = { value = tonumber(args["value" .. i]) or 0 }
-        -- label and color is optional
+	while args["value" .. i] do
+		-- value is required in this mode; it's also assumed to be 0..100
+		local entry = { value = tonumber(args["value" .. i]) or 0 }
+		-- label and color is optional
 		local label = args["label" .. i]
 		if label and label ~= "" then
-		    entry.label = label
+			entry.label = label
 		end
-        hasCustomColor = false
+		hasCustomColor = false
 		local color = args["color" .. i]
 		if color and color ~= "" then
-		    entry.color = color
-            hasCustomColor = true
-        end
-        table.insert(result, entry)
-        sum = sum + entry.value
-        i = i + 1
-    end
-    -- re-loop to set values in labels
+			entry.color = color
+			hasCustomColor = true
+		end
+		table.insert(result, entry)
+		sum = sum + entry.value
+		i = i + 1
+	end
+	-- re-loop to set values in labels
 	for _, entry in ipairs(result) do
-	    local label = entry.label
-	    if label and not label:find("%$v") then
-	    	-- autoscale will be forced, so use $v in labels
-	    	if sum > 100 then
-		        entry.label = label .. " $v"
-		    else
-		        entry.label = label .. " (" .. entry.value .. "%)"
-	    	end
-	    end
+		local label = entry.label
+		if label and not label:find("%$v") then
+			-- autoscale will be forced, so use $v in labels
+			if sum > 100 then
+				entry.label = label .. " $v"
+			else
+				entry.label = label .. " (" .. entry.value .. "%)"
+			end
+		end
 	end
 
-    -- support other value mapping
+	-- support other value mapping
 	local lang = mw.language.getContentLanguage()
 	local langOther = "Other"
 	if (lang:getCode() == 'pl') then
@@ -715,85 +715,85 @@ function p.parseEnumParams(frame)
 	end
 	local colorOther = "#FEFDFD" -- white-ish for custom colors for best chance and contrast
 	
-    if args["other"] and args["other"] ~= "" then
+	if args["other"] and args["other"] ~= "" then
 		local value = 100 - sum
 		if value < 0 then
 			value = 0
 		end
-        local otherEntry = { label = (args["other-label"] or langOther) .. " ("..priv.formatNum(value).."%)" }
-        if args["other-color"] and args["other-color"] ~= "" then
-            otherEntry.color = args["other-color"]
-        else
-        	otherEntry.color = colorOther
-        end
-        table.insert(result, otherEntry)
-    elseif sum < 100 then
-    	if hasCustomColor then
-        	table.insert(result, {visible = false, label = langOther .. " ($v)", color = colorOther})
-        else
-        	table.insert(result, {visible = false, label = langOther .. " ($v)"})
-        end
+		local otherEntry = { label = (args["other-label"] or langOther) .. " ("..priv.formatNum(value).."%)" }
+		if args["other-color"] and args["other-color"] ~= "" then
+			otherEntry.color = args["other-color"]
+		else
+			otherEntry.color = colorOther
+		end
+		table.insert(result, otherEntry)
+	elseif sum < 100 then
+		if hasCustomColor then
+			table.insert(result, {visible = false, label = langOther .. " ($v)", color = colorOther})
+		else
+			table.insert(result, {visible = false, label = langOther .. " ($v)"})
+		end
 	end
-    
-    local jsonString = mw.text.jsonEncode(result)
-    return jsonString
+	
+	local jsonString = mw.text.jsonEncode(result)
+	return jsonString
 end
 
 -- Function to check if a value is true-ish
 local trueValues = { ["true"] = true, ["1"] = true, ["on"] = true, ["yes"] = true }
 function priv.isTrueishValue(value)
-    -- should return nil for empty args (i.e. undefined i.e. default)
-    if not value or value == "" then return nil end
-    value = priv.trim(value)
-    if value == "" then return nil end
-    -- other non-empty are false
-    return trueValues[value:lower()] or false
+	-- should return nil for empty args (i.e. undefined i.e. default)
+	if not value or value == "" then return nil end
+	value = priv.trim(value)
+	if value == "" then return nil end
+	-- other non-empty are false
+	return trueValues[value:lower()] or false
 end
 
 --[[
   Parse classic template params into JSON with chart meta data.
 ]]
 function p.parseMetaParams(frame)
-    local args = frame:getParent().args
-    local meta = {}
+	local args = frame:getParent().args
+	local meta = {}
 
-    -- default meta for value1..n parameters
-    -- ...and for thumb right/left
-    local thumb = args["thumb"]
-    if args["value1"] or (thumb and (thumb == "right" or thumb == "left")) then
-        meta.direction = "column-reverse"
-        meta.width = "min-content"
-        meta.size = 200
-        meta.legend = true
-    end
+	-- default meta for value1..n parameters
+	-- ...and for thumb right/left
+	local thumb = args["thumb"]
+	if args["value1"] or (thumb and (thumb == "right" or thumb == "left")) then
+		meta.direction = "column-reverse"
+		meta.width = "min-content"
+		meta.size = 200
+		meta.legend = true
+	end
 
-    -- explicit meta param
-    if args["meta"] then
-        meta = mw.text.jsonDecode(args["meta"], mw.text.JSON_TRY_FIXING)
-    end
+	-- explicit meta param
+	if args["meta"] then
+		meta = mw.text.jsonDecode(args["meta"], mw.text.JSON_TRY_FIXING)
+	end
 
 
-    if args["size"] then meta.size = tonumber(args["size"]) end
-    if args["radius"] and tonumber(args["radius"]) then
-        meta.size = 2 * tonumber(args["radius"])
-    end
-    if args["autoscale"] then meta.autoscale = priv.isTrueishValue(args["autoscale"]) end
-    if args["legend"] then meta.legend = priv.isTrueishValue(args["legend"]) end
-    if args["ariahidechart"] then meta.ariahidechart = priv.isTrueishValue(args["ariahidechart"]) end
-    if args["direction"] and args["direction"] ~= "" then
-        meta.direction = args["direction"]:gsub("[^a-z0-9%-]", "")
-    end
-    if args["width"] and args["width"] ~= "" then
-        meta.width = args["width"]:gsub("[^a-z0-9%-]", "")
-    end
-    if args["caption"] and args["caption"] ~= "" then
-        meta.caption = args["caption"]
-    end
-    if args["footer"] and args["footer"] ~= "" then
-        meta.footer = args["footer"]
-    end
+	if args["size"] then meta.size = tonumber(args["size"]) end
+	if args["radius"] and tonumber(args["radius"]) then
+		meta.size = 2 * tonumber(args["radius"])
+	end
+	if args["autoscale"] then meta.autoscale = priv.isTrueishValue(args["autoscale"]) end
+	if args["legend"] then meta.legend = priv.isTrueishValue(args["legend"]) end
+	if args["ariahidechart"] then meta.ariahidechart = priv.isTrueishValue(args["ariahidechart"]) end
+	if args["direction"] and args["direction"] ~= "" then
+		meta.direction = args["direction"]:gsub("[^a-z0-9%-]", "")
+	end
+	if args["width"] and args["width"] ~= "" then
+		meta.width = args["width"]:gsub("[^a-z0-9%-]", "")
+	end
+	if args["caption"] and args["caption"] ~= "" then
+		meta.caption = args["caption"]
+	end
+	if args["footer"] and args["footer"] ~= "" then
+		meta.footer = args["footer"]
+	end
 
-    return mw.text.jsonEncode(meta)
+	return mw.text.jsonEncode(meta)
 end
 
 -- expose private for easy testing/debugging
