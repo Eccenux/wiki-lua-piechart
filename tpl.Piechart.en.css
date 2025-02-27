@@ -1,0 +1,94 @@
+/**
+	Smooth piechart.
+	
+	[[Module:Piechart]]
+*/
+/* base structure  */
+.smooth-pie {
+	display: none;
+	position: relative;
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	background-color: yellowgreen;
+	color:black;
+	border: 1px solid black;
+}
+/* slices (default = pie25/pieX) */
+.smooth-pie div {
+	position: absolute;
+	transform-origin: left bottom;
+	background-color: #655;
+	color:black;
+
+	top: 0; left: 50%;
+	width: 50%; height: 50%;
+	border-radius: 0 500% 0 0;
+}
+.smooth-pie .pie50 {
+	transform-origin: left center;
+	height: 100%;
+	border-radius: 0 100% 100% 0 / 50%;
+}
+.smooth-pie .pie12-5 {clip-path: polygon(0% 0%, 100% 0%, 0 100%);}
+.smooth-pie    .pie5 {clip-path: polygon(0% 0%, 32.49197% 0%, 0 100%);}
+.smooth-pie    .pie7 {clip-path: polygon(0% 0%, 47.056428% 0%, 0 100%);}
+.smooth-pie    .pie1 {clip-path: polygon(0% 0%, 6.2914667% 0%, 0 100%);}
+/* unlock for supported browsers */
+@supports(clip-path: circle(50%)) {
+	.smooth-pie {
+		display:block;
+	}	
+}
+/* container and legend */
+.smooth-pie-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 1em;
+  flex-wrap: wrap;
+}
+.smooth-pie-legend {
+  list-style-type: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.smooth-pie-legend li {
+  display: flex;
+  align-items: baseline;
+  gap: .5em;
+}
+.smooth-pie-legend li span {
+  display: block;
+  box-sizing: border-box;
+}
+.smooth-pie-legend li .l-color {
+  border: 1px solid var(--color-base, black);
+  width: .8em;
+  height: .8em;
+  flex-shrink: 0;
+}
+/* floating pie */
+.pie-thumb {
+	display:flex;
+}
+.pie-thumb .smooth-pie-container {
+	padding: .5em;
+	padding-bottom: 0;
+	text-align: left;
+}
+.pie-thumb .smooth-pie-caption {
+	margin-bottom: 1em;
+	font-size: 94%;
+}
+
+@media print {
+	/*
+	  Avoid breaking up the chart.
+	  
+	  Otherwise if the pie chart crosses a page line, 
+	  the slices can end up e.g. squished to the bottom of the page.
+	*/
+	.smooth-pie-container {
+		break-inside: avoid-page;
+	}
+}
