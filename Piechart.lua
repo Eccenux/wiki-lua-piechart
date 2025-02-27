@@ -1,5 +1,8 @@
 local p = {}
 local priv = {} -- private functions scope
+-- expose private for easy testing/debugging
+p.__priv = priv
+
 -- require exact colors for printing
 local forPrinting = "-webkit-print-color-adjust: exact; print-color-adjust: exact;"
 --[[
@@ -492,7 +495,6 @@ function priv.formatNum(value)
 	end
 	return v
 end
-p._formatNum = formatNum
 
 --[[
 	Prepare final label.
@@ -795,8 +797,5 @@ function p.parseMetaParams(frame)
 
 	return mw.text.jsonEncode(meta)
 end
-
--- expose private for easy testing/debugging
-p.__priv = priv
 
 return p
