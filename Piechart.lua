@@ -1,4 +1,5 @@
 local p = {}
+local priv = {} -- private functions scope
 -- require exact colors for printing
 local forPrinting = "-webkit-print-color-adjust: exact; print-color-adjust: exact;"
 --[[
@@ -70,8 +71,8 @@ local forPrinting = "-webkit-print-color-adjust: exact; print-color-adjust: exac
 	{{{1}}}: slice number
 ]]
 function p.color(frame)
-	local index = tonumber(trim(frame.args[1]))
-	return ' ' .. defaultColor(index)
+	local index = tonumber(priv.trim(frame.args[1]))
+	return ' ' .. priv.defaultColor(index)
 end
 
 --[[
@@ -114,14 +115,14 @@ end
     - (?) option to sort entries by value
 ]] 
 function p.pie(frame)
-	local json_data = trim(frame.args[1])
+	local json_data = priv.trim(frame.args[1])
 	local options = {}
 	if (frame.args.meta) then
-		options.meta = trim(frame.args.meta)
+		options.meta = priv.trim(frame.args.meta)
 	end
 
 	local html = p.renderPie(json_data, options)
-	return trim(html)
+	return priv.trim(html)
 end
 
 -- Setup chart options.
@@ -210,7 +211,7 @@ function p.renderPie(json_data, user_options)
 
 	-- error info
 	if not ok then
-		html = html .. renderErrors(data)
+		html = html .. priv.renderErrors(data)
 	end
 
 	-- render legend
@@ -230,7 +231,7 @@ end
 
 -- Prepare data (slices etc)
 function p.prepareEntries(data, options)
-	local sum = sumValues(data);
+	local sum = priv.sumValues(data);
 	-- force autoscale when over 100
 	if (sum > 100) then
 		options.autoscale = true
@@ -241,7 +242,7 @@ function p.prepareEntries(data, options)
 	local total = #data
 	for index, entry in ipairs(data) do
 		no = no + 1
-		if not prepareSlice(entry, no, sum, total, options) then
+		if not priv.prepareSlice(entry, no, sum, total, options) then
 			no = no - 1
 			ok = false
 		end
@@ -251,7 +252,7 @@ function p.prepareEntries(data, options)
 	return ok, total
 end
 
-function sumValues(data)
+function priv.sumValues(data)
 	local sum = 0;
 	for _, entry in ipairs(data) do
 		local value = entry.value
@@ -263,7 +264,7 @@ function sumValues(data)
 end
 
 -- render error info
-function renderErrors(data)
+function priv.renderErrors(data)
 	local html = "\n<ol class='chart-errors' style='display:none'>"
 	for _, entry in ipairs(data) do
 		if entry.error then
@@ -276,7 +277,7 @@ end
 
 -- Prepare single slice data (modifies entry).
 -- @param no = 1..total
-function prepareSlice(entry, no, sum, total, options)
+function priv.prepareSlice(entry, no, sum, total, options)
 	local autoscale = options.autoscale
 	local value = entry.value
 	if (type(value) ~= "number" or value < 0) then
@@ -294,9 +295,9 @@ function prepareSlice(entry, no, sum, total, options)
 	entry.value = value
 
 	-- prepare final label
-	entry.label = prepareLabel(entry.label, entry)
+	entry.label = priv.prepareLabel(entry.label, entry)
 	-- background, but also color for MW syntax linter
-	entry.bcolor = backColor(entry, no, total) .. ";color:#000"
+	entry.bcolor = priv.backColor(entry, no, total) .. ";color:#000"
 
 	return true
 end
@@ -313,7 +314,7 @@ function p.renderLegend(data, options)
 	html = html .. "\n<ol class='smooth-pie-legend'>"
 	for _, entry in ipairs(data) do
 		if not entry.error then
-			html = html .. renderLegendItem(entry, options)
+			html = html .. priv.renderLegendItem(entry, options)
 		end
 	end
 	html = html .. "\n</ol>\n"
@@ -326,7 +327,7 @@ function p.renderLegend(data, options)
 	return html
 end
 -- render legend item
-function renderLegendItem(entry, options)
+function priv.renderLegendItem(entry, options)
 	-- invisible value (for a11y reasons this should not be used for important values!)
 	if entry.visible ~= nil and entry.visible == false then
 		return ""
@@ -354,9 +355,9 @@ function p.renderEntries(ok, total, data, options)
 		if not entry.error then
 			no = no + 1
 			if no == total then
-				header = renderFinal(entry, options)
+				header = priv.renderFinal(entry, options)
 			else
-				items = items .. renderOther(previous, entry, options)
+				items = items .. priv.renderOther(previous, entry, options)
 			end
 			previous = previous + entry.value
 		end
@@ -366,7 +367,7 @@ function p.renderEntries(ok, total, data, options)
 	return header, items, footer
 end
 -- final, but header...
-function renderFinal(entry, options)
+function priv.renderFinal(entry, options)
 	local label = entry.label
 	local bcolor = entry.bcolor
 	local size = options.size
@@ -388,7 +389,7 @@ function renderFinal(entry, options)
 	return html
 end
 -- any other then final
-function renderOther(previous, entry, options)
+function priv.renderOther(previous, entry, options)
 	local value = entry.value
 	local label = entry.label
 	local bcolor = entry.bcolor
@@ -404,24 +405,24 @@ function renderOther(previous, entry, options)
 	local size = ''
 	-- mw.logObject({'v,p,l', value, previous, label})
 	if (value >= 50) then
-		html = sliceWithClass('pie50', 50, value, previous, bcolor, label)
+		html = priv.sliceWithClass('pie50', 50, value, previous, bcolor, label)
 	elseif (value >= 25) then
-		html = sliceWithClass('pie25', 25, value, previous, bcolor, label)
+		html = priv.sliceWithClass('pie25', 25, value, previous, bcolor, label)
 	elseif (value >= 12.5) then
-		html = sliceWithClass('pie12-5', 12.5, value, previous, bcolor, label)
+		html = priv.sliceWithClass('pie12-5', 12.5, value, previous, bcolor, label)
 	elseif (value >= 7) then
-		html = sliceWithClass('pie7', 7, value, previous, bcolor, label)
+		html = priv.sliceWithClass('pie7', 7, value, previous, bcolor, label)
 	elseif (value >= 5) then
-		html = sliceWithClass('pie5', 5, value, previous, bcolor, label)
+		html = priv.sliceWithClass('pie5', 5, value, previous, bcolor, label)
 	else
 		-- 0-5%
-		local cutIndex = round(value*10)
+		local cutIndex = priv.round(value*10)
 		if cutIndex < 1 then
 		    cutIndex = 1
 		end
 		local cut = p.cuts[cutIndex]
-		local transform = rotation(previous)
-		html = sliceX(cut, transform, bcolor, label)
+		local transform = priv.rotation(previous)
+		html = priv.sliceX(cut, transform, bcolor, label)
 	end	
 	-- mw.log(html)
 
@@ -429,27 +430,27 @@ function renderOther(previous, entry, options)
 end
 
 -- round to int
-function round(number)
+function priv.round(number)
     return math.floor(number + 0.5)
 end
 
 -- render full slice with specific class
-function sliceWithClass(sizeClass, sizeStep, value, previous, bcolor, label)
-	local transform = rotation(previous)
+function priv.sliceWithClass(sizeClass, sizeStep, value, previous, bcolor, label)
+	local transform = priv.rotation(previous)
 	local html =  ""
-	html = html .. sliceBase(sizeClass, transform, bcolor, label)
+	html = html .. priv.sliceBase(sizeClass, transform, bcolor, label)
 	-- mw.logObject({'sliceWithClass:', sizeClass, sizeStep, value, previous, bcolor, label})
 	if (value > sizeStep) then
 		local extra = value - sizeStep
-		transform = rotation(previous + extra)
+		transform = priv.rotation(previous + extra)
 		-- mw.logObject({'sliceWithClass; extra, transform', extra, transform})
-		html = html .. sliceBase(sizeClass, transform, bcolor, label)
+		html = html .. priv.sliceBase(sizeClass, transform, bcolor, label)
 	end
 	return html
 end
 
 -- render single slice
-function sliceBase(sizeClass, transform, bcolor, label)
+function priv.sliceBase(sizeClass, transform, bcolor, label)
 	local style = bcolor
 	if transform ~= "" then
         style = style .. '; ' .. transform
@@ -460,13 +461,13 @@ end
 -- small slice cut to fluid size.
 -- range in theory: 0 to 24.(9)% reaching 24.(9)% for cut = +inf
 -- range in practice: 0 to 5%
-function sliceX(cut, transform, bcolor, label)
+function priv.sliceX(cut, transform, bcolor, label)
 	local path = 'clip-path: polygon(0% 0%, '..cut..'% 0%, 0 100%)'
 	return '\n\t<div style="'..transform..'; '..bcolor..'; '..path..'" title="'..p.extract_text(label)..'"></div>'
 end
 
 -- translate value to turn rotation
-function rotation(value)
+function priv.rotation(value)
 	if (value > 0) then
 		return string.format("transform: rotate(%.3fturn)", value/100)
 	end
@@ -474,7 +475,7 @@ function rotation(value)
 end
 
 -- Language sensitive float.
-function formatNum(value)
+function priv.formatNum(value)
 	local lang = mw.language.getContentLanguage()
 	
 	-- doesn't do precision :(
@@ -505,14 +506,14 @@ p._formatNum = formatNum
 	Advanced tpl:
 		"Abc: $d ($p)" -- only works with autoscale
 ]]
-function prepareLabel(tpl, entry)
+function priv.prepareLabel(tpl, entry)
 	-- static tpl
 	if tpl and not string.find(tpl, '$') then
 		return tpl
 	end
 
 	-- format % value without %
-	local p = formatNum(entry.value)
+	local p = priv.formatNum(entry.value)
 
 	-- default template
 	if not tpl then
@@ -552,18 +553,18 @@ local colorPalette = {
 }
 local lastColor = '#fff'
 -- background color from entry or the default colors
-function backColor(entry, no, total)
+function priv.backColor(entry, no, total)
     if (type(entry.color) == "string") then
     	-- Remove unsafe characters from entry.color
     	local sanitizedColor = entry.color:gsub("[^a-zA-Z0-9#%-]", "")
         return 'background:' .. sanitizedColor
     else
-    	local color = defaultColor(no, total)
+    	local color = priv.defaultColor(no, total)
         return 'background:' .. color
     end
 end
 -- color from the default colors
-function defaultColor(no, total)
+function priv.defaultColor(no, total)
 	local color = lastColor
 	if no <= 0 then
 		return color
@@ -572,7 +573,7 @@ function defaultColor(no, total)
 	if not total or total == 0 then
 		total = size + 1
 	end
-	local colorNo = defaultColorNo(no, total, size)
+	local colorNo = priv.defaultColorNo(no, total, size)
 	if colorNo > 0 then
 		color = colorPalette[colorNo]
 	end
@@ -581,7 +582,7 @@ end
 -- gets color number from default colors
 -- trys to return a light color as the last one
 -- 0 means white-ish color should be used
-function defaultColorNo(no, total, size)
+function priv.defaultColorNo(no, total, size)
 	local color = 0 -- special, lastColor
 	if total == 1 then
 		color = 1
@@ -605,16 +606,16 @@ function defaultColorNo(no, total, size)
 end
 --[[
 	Testing defaultColorNo:
-	p.test_defaultColorNo(1, 12)
-	p.test_defaultColorNo(2, 12)
-	p.test_defaultColorNo(3, 12)
-	p.test_defaultColorNo(4, 12)
-	p.test_defaultColorNo(5, 12)
-	p.test_defaultColorNo(6, 12)
+	p.__priv.test_defaultColorNo(1, 12)
+	p.__priv.test_defaultColorNo(2, 12)
+	p.__priv.test_defaultColorNo(3, 12)
+	p.__priv.test_defaultColorNo(4, 12)
+	p.__priv.test_defaultColorNo(5, 12)
+	p.__priv.test_defaultColorNo(6, 12)
 ]]
-function p.test_defaultColorNo(total, size)
+function priv.test_defaultColorNo(total, size)
 	for no=1,total do
-		local color = defaultColorNo(no, total, size)
+		local color = priv.defaultColorNo(no, total, size)
 		mw.logObject({no=no, color=color})
 	end
 end
@@ -626,7 +627,7 @@ end
 	`(s:gsub(...))` returns only a string
 	`s:gsub(...)` returns a string and a number
 ]]
-function trim(s)
+function priv.trim(s)
 	return (s:gsub("^%s+", ""):gsub("%s+$", ""))
 end
 
@@ -641,15 +642,18 @@ end
 -- mw.log(p.extract_text("sandwich]]es: $v"))
 -- mw.log(p.extract_text("sandwiches: $v"))
 function p.extract_text(label)
-    -- quick death mode
-    if not label:find("%[%[") then
-        return label
-    end
-    -- replace links with pipe (e.g., [[candy|sweets]])
-    label = label:gsub("%[%[[^|%]]+|(.-)%]%]", "%1")
-    -- replace simple links without pipe (e.g., [[sandwich]])
-    label = label:gsub("%[%[(.-)%]%]", "%1")
-    
+    label = label
+	    -- replace links with pipe (e.g., [[candy|sweets]])
+    	:gsub("%[%[[^|%]]+|(.-)%]%]", "%1")
+    	-- replace simple links without pipe (e.g., [[sandwich]])
+    	:gsub("%[%[(.-)%]%]", "%1")
+    	-- remove templates?
+    	-- :gsub("{.-}", "")
+    	-- remove tags
+    	:gsub("<[^>]+>", "")
+    	-- escape special chars just in case
+    	:gsub("<", "&lt;"):gsub(">", "&gt;")
+    	:gsub("'", "&#39;"):gsub("\"", "&quot;")
     return label
 end
 
@@ -716,7 +720,7 @@ function p.parseEnumParams(frame)
 		if value < 0 then
 			value = 0
 		end
-        local otherEntry = { label = (args["other-label"] or langOther) .. " ("..formatNum(value).."%)" }
+        local otherEntry = { label = (args["other-label"] or langOther) .. " ("..priv.formatNum(value).."%)" }
         if args["other-color"] and args["other-color"] ~= "" then
             otherEntry.color = args["other-color"]
         else
@@ -737,10 +741,10 @@ end
 
 -- Function to check if a value is true-ish
 local trueValues = { ["true"] = true, ["1"] = true, ["on"] = true, ["yes"] = true }
-function isTrueishValue(value)
-	-- should return nil for empty args (i.e. undefined i.e. default)
+function priv.isTrueishValue(value)
+    -- should return nil for empty args (i.e. undefined i.e. default)
     if not value or value == "" then return nil end
-    value = trim(value)
+    value = priv.trim(value)
     if value == "" then return nil end
     -- other non-empty are false
     return trueValues[value:lower()] or false
@@ -753,29 +757,29 @@ function p.parseMetaParams(frame)
     local args = frame:getParent().args
     local meta = {}
 
-	-- default meta for value1..n parameters
-	-- ...and for thumb right/left
-	local thumb = args["thumb"]
-	if args["value1"] or (thumb and (thumb == "right" or thumb == "left")) then
-	    meta.direction = "column-reverse"
-	    meta.width = "min-content"
-	    meta.size = 200
-	    meta.legend = true
-	end
+    -- default meta for value1..n parameters
+    -- ...and for thumb right/left
+    local thumb = args["thumb"]
+    if args["value1"] or (thumb and (thumb == "right" or thumb == "left")) then
+        meta.direction = "column-reverse"
+        meta.width = "min-content"
+        meta.size = 200
+        meta.legend = true
+    end
 
-	-- explicit meta param
-	if args["meta"] then
-	    meta = mw.text.jsonDecode(args["meta"], mw.text.JSON_TRY_FIXING)
-	end
+    -- explicit meta param
+    if args["meta"] then
+        meta = mw.text.jsonDecode(args["meta"], mw.text.JSON_TRY_FIXING)
+    end
 
 
     if args["size"] then meta.size = tonumber(args["size"]) end
-	if args["radius"] and tonumber(args["radius"]) then
-	    meta.size = 2 * tonumber(args["radius"])
-	end
-    if args["autoscale"] then meta.autoscale = isTrueishValue(args["autoscale"]) end
-    if args["legend"] then meta.legend = isTrueishValue(args["legend"]) end
-    if args["ariahidechart"] then meta.ariahidechart = isTrueishValue(args["ariahidechart"]) end
+    if args["radius"] and tonumber(args["radius"]) then
+        meta.size = 2 * tonumber(args["radius"])
+    end
+    if args["autoscale"] then meta.autoscale = priv.isTrueishValue(args["autoscale"]) end
+    if args["legend"] then meta.legend = priv.isTrueishValue(args["legend"]) end
+    if args["ariahidechart"] then meta.ariahidechart = priv.isTrueishValue(args["ariahidechart"]) end
     if args["direction"] and args["direction"] ~= "" then
         meta.direction = args["direction"]:gsub("[^a-z0-9%-]", "")
     end
@@ -791,5 +795,8 @@ function p.parseMetaParams(frame)
 
     return mw.text.jsonEncode(meta)
 end
+
+-- expose private for easy testing/debugging
+p.__priv = priv
 
 return p
