@@ -754,7 +754,9 @@ function p.parseMetaParams(frame)
     local meta = {}
 
 	-- default meta for value1..n parameters
-	if args["value1"] then
+	-- ...and for thumb right/left
+	local thumb = args["thumb"]
+	if args["value1"] or (thumb and (thumb == "right" or thumb == "left")) then
 	    meta.direction = "column-reverse"
 	    meta.width = "min-content"
 	    meta.size = 200
