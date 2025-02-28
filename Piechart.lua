@@ -271,7 +271,7 @@ function priv.renderErrors(data)
 	local html = "\n<ol class='chart-errors' style='display:none'>"
 	for _, entry in ipairs(data) do
 		if entry.error then
-			entryJson = mw.text.jsonEncode(entry)
+			local entryJson = mw.text.jsonEncode(entry)
 			html = html .. "\n<li>".. entryJson .."</li>"
 		end
 	end
