@@ -52,16 +52,16 @@
   margin: 0 !important;
   padding: 0 !important;
 }
-.smooth-pie-legend li {
+.smooth-pie-legend > li {
   display: flex;
   align-items: baseline;
   gap: .5em;
 }
-.smooth-pie-legend li span {
+.smooth-pie-legend > li > span {
   display: block;
   box-sizing: border-box;
 }
-.smooth-pie-legend li .l-color {
+.smooth-pie-legend > li > .l-color {
   border: 1px solid var(--color-base, black);
   width: .8em;
   height: .8em;
