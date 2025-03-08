@@ -69,7 +69,6 @@
 }
 /* floating pie */
 .pie-thumb {
-	display:flex;
 }
 .pie-thumb .smooth-pie-container {
 	padding: .5em;
