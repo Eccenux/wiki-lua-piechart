@@ -2,6 +2,8 @@
 	Smooth piechart.
 	
 	[[Module:Piechart]]
+	
+	Note! Mobile screen breakpoint is set to 640px for MediaWiki Mobile.
 */
 /* base structure */
 .smooth-pie {
