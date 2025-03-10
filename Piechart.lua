@@ -483,7 +483,7 @@ function priv.rotation(value)
 	return ''
 end
 
--- Language sensitive float.
+-- Language sensitive float, small numbers.
 function priv.formatNum(value)
 	local lang = mw.language.getContentLanguage()
 	
@@ -500,6 +500,42 @@ function priv.formatNum(value)
 		v = v:gsub("%.", ",")
 	end
 	return v
+end
+
+-- Format large values.
+function priv.formatLargeNum(value)
+	local lang = mw.language.getContentLanguage()
+	-- add thusands separators
+	local v = lang:formatNum(value)
+	return v
+end
+-- Testing formatLargeNum.
+-- p.__priv.test_formatLargeNum()
+function priv.test_formatLargeNum()
+	mw.log("must not add fractional part")
+	mw.log( p.__priv.formatLargeNum(12) )
+	mw.log( p.__priv.formatLargeNum(123) )
+
+	mw.log("should preserve fractional part for small numbers")
+	mw.log( p.__priv.formatLargeNum(1.1) )
+	mw.log( p.__priv.formatLargeNum(1.12) )
+	mw.log( p.__priv.formatLargeNum(12.1) )
+	mw.log("can preserve long fractional part")
+	mw.log( p.__priv.formatLargeNum(1.1234) )
+	mw.log( p.__priv.formatLargeNum(1.12345) )
+	
+	mw.log("should add separators above 1k")
+	mw.log( p.__priv.formatLargeNum(999) )
+	mw.log( p.__priv.formatLargeNum(1234) )
+	mw.log( p.__priv.formatLargeNum(12345) )
+	mw.log( p.__priv.formatLargeNum(123456) )
+	mw.log( p.__priv.formatLargeNum(1234567) )
+
+	mw.log("must handle large float, but might round values")
+	mw.log( p.__priv.formatLargeNum(1234.123) )
+	mw.log( p.__priv.formatLargeNum(12345.123) )
+	mw.log( p.__priv.formatLargeNum(123456.123) )
+	mw.log( p.__priv.formatLargeNum(1234567.123) )
 end
 
 --[[
@@ -527,10 +563,11 @@ function priv.prepareLabel(tpl, entry)
 	if not tpl then
 		tpl = "$v"
 	end
-
+	
 	local label = "" 
 	if entry.raw then
-		label = tpl:gsub("%$p", p .. "%%"):gsub("%$d", entry.raw):gsub("%$v", entry.raw .. " (" .. p .. "%%)")
+		local d = priv.formatLargeNum(entry.raw)
+		label = tpl:gsub("%$p", p .. "%%"):gsub("%$d", d):gsub("%$v", d .. " (" .. p .. "%%)")
 	else
 		label = tpl:gsub("%$v", p .. "%%")
 	end
