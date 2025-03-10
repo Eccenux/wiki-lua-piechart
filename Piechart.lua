@@ -232,11 +232,17 @@ function p.renderPie(json_data, user_options)
 	return html
 end
 
+-- Check if sum will trigger autoscaling
+function priv.willAutoscale(sum)
+	-- Compare with a number larger then 100% to avoid floating-point precision problems
+	return sum - 100 > 1e-4
+end
+
 -- Prepare data (slices etc)
 function p.prepareEntries(data, options)
 	local sum = priv.sumValues(data);
 	-- force autoscale when over 100
-	if (sum > 100) then
+	if priv.willAutoscale(sum) then
 		options.autoscale = true
 	end
 	-- pre-format entries
@@ -701,7 +707,7 @@ function p.parseEnumParams(frame)
 		local label = entry.label
 		if label and not label:find("%$v") then
 			-- autoscale will be forced, so use $v in labels
-			if sum > 100 then
+			if priv.willAutoscale(sum) then
 				entry.label = label .. " $v"
 			else
 				entry.label = label .. " (" .. entry.value .. "%)"
@@ -717,19 +723,19 @@ function p.parseEnumParams(frame)
 	end
 	local colorOther = "#FEFDFD" -- white-ish for custom colors for best chance and contrast
 	
+	local otherValue = 100 - sum
 	if args["other"] and args["other"] ~= "" then
-		local value = 100 - sum
-		if value < 0 then
-			value = 0
+		if otherValue < 0.001 then
+			otherValue = 0
 		end
-		local otherEntry = { label = (args["other-label"] or langOther) .. " ("..priv.formatNum(value).."%)" }
+		local otherEntry = { label = (args["other-label"] or langOther) .. " ("..priv.formatNum(otherValue).."%)" }
 		if args["other-color"] and args["other-color"] ~= "" then
 			otherEntry.color = args["other-color"]
 		else
 			otherEntry.color = colorOther
 		end
 		table.insert(result, otherEntry)
-	elseif sum < 100 then
+	elseif otherValue > 0.01 then
 		if hasCustomColor then
 			table.insert(result, {visible = false, label = langOther .. " ($v)", color = colorOther})
 		else
@@ -763,8 +769,6 @@ function p.parseMetaParams(frame)
 	-- ...and for thumb right/left
 	local thumb = args["thumb"]
 	if args["value1"] or (thumb and (thumb == "right" or thumb == "left")) then
-		meta.direction = "column-reverse"
-		meta.width = "min-content"
 		meta.size = 200
 		meta.legend = true
 	end
