@@ -2,8 +2,10 @@
 	Smooth piechart.
 	
 	[[Module:Piechart]]
+	
+	Note! Mobile screen breakpoint is set to 640px for MediaWiki Mobile.
 */
-/* base structure  */
+/* base structure */
 .smooth-pie {
 	display: none;
 	position: relative;
@@ -56,6 +58,8 @@
   display: flex;
   align-items: baseline;
   gap: .5em;
+  margin: 0;
+  margin-bottom: 0.1em;
 }
 .smooth-pie-legend > li > span {
   display: block;
@@ -68,9 +72,6 @@
   flex-shrink: 0;
 }
 /* floating pie */
-.pie-thumb {
-	display:flex;
-}
 .pie-thumb .smooth-pie-container {
 	padding: .5em;
 	padding-bottom: 0;
@@ -79,6 +80,16 @@
 .pie-thumb .smooth-pie-caption {
 	margin-bottom: 1em;
 	font-size: 94%;
+}
+/* Flow in a reverse column for thumbs (pie above the legend). */
+.thumbinner > .smooth-pie-container {
+	flex-direction: column-reverse;
+}
+/* Wide screen style for thumbs */
+@media screen and (min-width: 641px) {
+	.thumbinner > .smooth-pie-container {
+		width: min-content;
+	}
 }
 
 @media print {
@@ -90,5 +101,31 @@
 	*/
 	.smooth-pie-container {
 		break-inside: avoid-page;
+	}
+}
+
+/* 
+	Ex-thumb layout for small screen 
+	and adjustments for compatibility with MW's Mobile Frontend (mw-mf).
+*/
+/* center the pie */
+body.mw-mf .thumbinner .smooth-pie-container {
+	align-items: center;
+}
+/* style roughly the same as figcaption on mobile */
+body.mw-mf .thumbinner .smooth-pie-legend-container {
+	font-size: 0.8125rem;
+	line-height: 1.5;
+	color: var(--color-subtle, #54595d);
+}
+/* specifically for thin screens (when thumbinner becomes 100% width) */
+@media screen and (max-width: 640px) {
+	.thumbinner .smooth-pie-legend {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(190px, 1fr) ) ;
+		gap: 0.3em;
+	}
+	.thumbinner .smooth-pie-footer {
+		margin-top: .5em;
 	}
 }
