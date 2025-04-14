@@ -601,7 +601,9 @@ local lastColor = '#fff'
 function priv.backColor(entry, no, total)
 	if (type(entry.color) == "string") then
 		-- Remove unsafe characters from entry.color
-		local sanitizedColor = entry.color:gsub("[^a-zA-Z0-9#%-]", "")
+		local sanitizedColor = entry.color
+			:gsub('&#35;', '#')  -- workaround Module:Political_party issue reported on talk
+			:gsub("[^a-zA-Z0-9#%-]", "")
 		return 'background:' .. sanitizedColor
 	else
 		local color = priv.defaultColor(no, total)
