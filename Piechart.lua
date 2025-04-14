@@ -152,7 +152,13 @@ function p.setupOptions(user_options)
 	-- internals
 	options.style = ""
 	if user_options.meta then
-		local rawOptions = mw.text.jsonDecode(user_options.meta, mw.text.JSON_TRY_FIXING)
+		local decodeSuccess, rawOptions = pcall(function()
+			return mw.text.jsonDecode(user_options.meta, mw.text.JSON_TRY_FIXING)
+		end)
+		if not decodeSuccess then
+			rawOptions = false
+			mw.log('invalid meta parameters')
+		end
 		if rawOptions then
 			if type(rawOptions.size) == "number" then
 				options.size = math.floor(rawOptions.size)
@@ -203,7 +209,19 @@ end
 	@param json_data JSON string with pie data.
 ]]
 function p.renderPie(json_data, user_options)
-	local data = mw.text.jsonDecode(json_data, mw.text.JSON_TRY_FIXING)
+	if type(json_data) ~= "string" then
+		error('invalid piechart data type: '..type(json_data))
+	end
+	if #json_data < 2 then
+		error('piechart data is empty')
+	end
+	local decodeSuccess, data = pcall(function()
+		return mw.text.jsonDecode(json_data, mw.text.JSON_TRY_FIXING)
+	end)
+	-- Handle decode error
+	if not decodeSuccess then
+		error('invalid piechart data: '..json_data)
+	end
 	local options = p.setupOptions(user_options)
 
 	-- prepare
@@ -814,7 +832,14 @@ function p.parseMetaParams(frame)
 
 	-- explicit meta param
 	if args["meta"] then
-		meta = mw.text.jsonDecode(args["meta"], mw.text.JSON_TRY_FIXING)
+		local decodeSuccess, tempMeta = pcall(function()
+			return mw.text.jsonDecode(args["meta"], mw.text.JSON_TRY_FIXING)
+		end)
+		if not decodeSuccess then
+			mw.log('invalid meta parameter')
+		else
+			meta = tempMeta
+		end
 	end
 
 
