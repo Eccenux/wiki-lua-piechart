@@ -1,7 +1,7 @@
 <templatestyles src="Pie chart/styles.css"/>
 {{#ifeq:{{{thumb|<includeonly>right</includeonly><noinclude>none</noinclude>}}}|none|
 |<div 
- class="pie-thumb thumb t{{#switch:{{{thumb|right}}}|left=left|right=right}}"
+ class="pie-thumb thumb t{{#switch:{{{thumb|right}}}|left=left|right=right|right}}"
  {{#iferror: {{#expr: {{{thumb-size|}}} > 1 }} | | style="width:{{{thumb-size|}}}px" }}
 ><div class="thumbinner">
 }}{{#invoke:Piechart|pie|1={{#if:{{{value1|}}}
