@@ -224,7 +224,8 @@ end
 -- Check if sum will trigger autoscaling
 function priv.willAutoscale(sum)
 	-- Compare with a number larger then 100% to avoid floating-point precision problems
-	return sum - 100 > 1e-4
+	--- ...and data precision problems https://en.wikipedia.org/wiki/Template_talk:Pie_chart#c-PrimeHunter-20250420202500-Allow_percentage_sum_slightly_above_100
+	return sum - 100 > 1e-1
 end
 
 -- Prepare data (slices etc)
