@@ -5,11 +5,15 @@ p.__priv = priv
 
 -- require exact colors for printing
 local forPrinting = "-webkit-print-color-adjust: exact; print-color-adjust: exact;"
---[[
+--[===[
 	Smooth piechart module.
 
 	Draws charts in HTML with an accessible legend (optional).
 	A list of all features is in the "TODO" section of the main `p.pie` function.
+
+	Module info:
+	- Changelog and TODO: [[:en:User:Nux/pie_chart_-_todo]] (Piechart 1.0, 2.0 and beyond).
+	- Author: [[:en:User:Nux|Maciej Nux]].
 
 	Use with a helper template that adds required CSS.
 
@@ -24,9 +28,9 @@ local forPrinting = "-webkit-print-color-adjust: exact; print-color-adjust: exac
 
 	{{{meta}}}:
 		{"size":200, "autoscale":false, "legend":true}
+
 	All meta options are optional (see `function p.setupOptions`).
-]]
--- Author: [[User:Nux|Maciej Nux]] (pl.wikipedia.org).
+]===]
 
 --[[
 	Debug:
@@ -78,45 +82,12 @@ function p.color(frame)
 	return ' ' .. priv.defaultColor(index)
 end
 
---[[
-	Piechart.
+--[===[
+	Main pie chart function.
 	
-	TODO:
-	- [x] basic 2-element pie chart
-		- read json
-		- calculate value with -1
-		- generate html
-		- new css + tests
-		- provide dumb labels (just v%)
-	- [x] colors in json
-	- [x] 1st value >= 50%
-	- [x] custom labels support
-	- [x] pie size from 'meta' param (options json)
-	- [x] pl formatting for numbers?
-	- [x] support undefined value (instead of -1)
-	- [x] undefined in any order
-	- [x] scale values to 100% (autoscale)
-	- [x] order values clockwise (not left/right)
-	- [x] multi-cut pie
-	- [x] sanitize user values
-	- [x] auto colors
-	- [x] function to get color by number (for custom legend)
-	- [x] remember and show autoscaled data
-	- [x] generate a legend
-	- [x] simple legend positioning by (flex-)direction
-	- legend2: customization
-		- (?) itemTpl support
-			- replace default item with tpl
-			- can I / should I sanitize it?
-			- support for $v, $d, $p
-		- (?) custom head
-	- (?) validation of input
-		- check if required values are present
-		- message showing whole entry, when entry is invalid
-		- pre-sanitize values?
-		- sane info when JSON fails? Maybe dump JSON and show example with quotes-n-all...
-	- (?) option to sort entries by value
-]] 
+	TODO (maybe):
+	[[:en:User:Nux/pie_chart_-_todo#Hopes_and_dreams]]
+]===]
 function p.pie(frame)
 	local json_data = priv.trim(frame.args[1])
 	local options = {}
@@ -151,7 +122,7 @@ function p.setupOptions(user_options)
 	}
 	-- internals
 	options.style = ""
-	if user_options.meta then
+	if user_options and user_options.meta then
 		local decodeSuccess, rawOptions = pcall(function()
 			return mw.text.jsonDecode(user_options.meta, mw.text.JSON_TRY_FIXING)
 		end)
