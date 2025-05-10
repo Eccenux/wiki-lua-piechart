@@ -242,10 +242,12 @@ end
 -- Tracking errors in data (note: somewhat expensive, similar to a red link)
 -- In short: ±0.3 is a reasonable deviation; ±1 when the errors accumulate
 -- https://en.wikipedia.org/wiki/Template_talk:Pie_chart#c-Nux-20250429152000-Nux-20250422224600
-function priv.sumErrorTracking(sum)
+function priv.sumErrorTracking(sum, items)
 	local diff = sum - 100
 	if diff >= 0.4 and diff <= 10 then
-		mw.addWarning("pie chart: Σ (value) = "..sum.."%")
+		local firstItem = items[1]
+		local lastItem = items[#items]
+		mw.addWarning("pie chart: Σ (value) = "..sum.."% ("..firstItem.value.." + .. .+ "..lastItem.value..")")
 		if mw.title.getCurrentTitle().namespace == 0 then
 			local suffix = priv.boundaryFormatting(diff) 
 			_ = mw.title.new("Module:Piechart/tracing/diff below "..suffix).id
@@ -415,6 +417,7 @@ function priv.renderItem(previous, entry, options)
 	-- value too small to see
 	if (value < 0.03) then
 		mw.log('value too small', value, label)
+		mw.addWarning("pie chart: too small ↆ "..value.."% ("..label..")")
 		return ""
 	end
 
@@ -429,6 +432,14 @@ function priv.renderItem(previous, entry, options)
 			previous = previous - 0.1
 		end
 		value = value + 0.2
+	end
+	-- force sum to be below 100% (needed due to value errors)
+	if previous + value > 100 then
+		if previous >= 100 then
+			mw.log('previous is already at 100', value, label)
+			return ""
+		end
+		value = 100 - previous
 	end
 
 	local html =  ""
@@ -766,19 +777,20 @@ function p.parseEnumParams(frame)
 		i = i + 1
 	end
 	-- re-loop to set values in labels
+	local willAutoscale = priv.willAutoscale(sum)
 	for _, entry in ipairs(result) do
 		local label = entry.label
 		if label and not label:find("%$v") then
 			-- autoscale will be forced, so use $v in labels
-			if priv.willAutoscale(sum) then
+			if willAutoscale then
 				entry.label = label .. " $v"
 			else
 				entry.label = label .. " (" .. entry.value .. "%)"
 			end
-			-- tracking data errors
-			priv.sumErrorTracking(sum)
 		end
 	end
+	-- tracking data errors
+	priv.sumErrorTracking(sum, result)
 
 	-- support other value mapping
 	local lang = mw.language.getContentLanguage()
