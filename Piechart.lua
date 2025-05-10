@@ -221,11 +221,36 @@ function p.renderPie(json_data, user_options)
 	return html
 end
 
+function priv.boundaryFormatting(diff)
+	local value = 0.0
+	if diff <= 1.0 then
+		value = math.ceil(diff / 0.2) * 0.2 -- 0.2 step
+	else
+		value = math.ceil(diff / 0.5) * 0.5 -- 0.5 step
+	end
+	return string.format("%.1f", value)
+end
+
 -- Check if sum will trigger autoscaling
 function priv.willAutoscale(sum)
 	-- Compare with a number larger then 100% to avoid floating-point precision problems
 	--- ...and data precision problems https://en.wikipedia.org/wiki/Template_talk:Pie_chart#c-PrimeHunter-20250420202500-Allow_percentage_sum_slightly_above_100
-	return sum - 100 > 1e-1
+	local diff = sum - 100
+	local grace = 1
+	return diff > grace
+end
+-- Tracking errors in data (note: somewhat expensive, similar to a red link)
+-- In short: ±0.3 is a reasonable deviation; ±1 when the errors accumulate
+-- https://en.wikipedia.org/wiki/Template_talk:Pie_chart#c-Nux-20250429152000-Nux-20250422224600
+function priv.sumErrorTracking(sum)
+	local diff = sum - 100
+	if diff >= 0.4 and diff <= 10 then
+		mw.addWarning("pie chart: Σ (value) = "..sum.."%")
+		if mw.title.getCurrentTitle().namespace == 0 then
+			local suffix = priv.boundaryFormatting(diff) 
+			_ = mw.title.new("Module:Piechart/tracing/diff below "..suffix).id
+		end
+	end
 end
 
 -- Prepare data (slices etc)
@@ -347,28 +372,22 @@ function p.renderEntries(ok, total, data, options)
 
 	local first = true
 	local previous = 0
-	local no = 0
 	local items = ""
-	local header = ""
 	for index, entry in ipairs(data) do
 		if not entry.error then
-			no = no + 1
-			if no == total then
-				header = priv.renderFinal(entry, options)
-			else
-				items = items .. priv.renderOther(previous, entry, options)
-			end
+			items = items .. priv.renderItem(previous, entry, options)
 			previous = previous + entry.value
 		end
 	end
-	local footer = '\n</div>'
+	
+	local header = priv.renderHeader(options)
+	local footer = '\n<div class="smooth-pie-border"></div></div>'
 
 	return header, items, footer
 end
--- final, but header...
-function priv.renderFinal(entry, options)
-	local label = entry.label
-	local bcolor = entry.bcolor
+-- header of pie-items (class="smooth-pie")
+function priv.renderHeader(options)
+	local bcolor = 'background:#888;color:#000'
 	local size = options.size
 
 	-- hide chart for readers, especially when legend is there
@@ -382,13 +401,13 @@ function priv.renderFinal(entry, options)
 	local html = [[
 <div class="smooth-pie"
 	style="]]..style..[["
-	title="]]..p.extract_text(label)..[["
 	]]..aria..[[
 >]]
 	return html
 end
--- any other then final
-function priv.renderOther(previous, entry, options)
+-- Render pie-item
+-- (previous is a sum of previous values)
+function priv.renderItem(previous, entry, options)
 	local value = entry.value
 	local label = entry.label
 	local bcolor = entry.bcolor
@@ -398,7 +417,20 @@ function priv.renderOther(previous, entry, options)
 		mw.log('value too small', value, label)
 		return ""
 	end
-	
+
+	-- minimize transformation defects
+	if value < 10 then
+		if previous > 1 then
+			previous = previous - 0.01
+		end
+		value = value + 0.02
+	else
+		if previous > 1 then
+			previous = previous - 0.1
+		end
+		value = value + 0.2
+	end
+
 	local html =  ""
 	
 	local size = ''
@@ -465,10 +497,12 @@ function priv.sliceX(cut, transform, bcolor, label)
 	return '\n\t<div style="'..transform..'; '..bcolor..'; '..path..'" title="'..p.extract_text(label)..'"></div>'
 end
 
--- translate value to turn rotation
+-- translate value to turn rotation (v=100 => 1.0turn)
 function priv.rotation(value)
-	if (value > 0) then
-		return string.format("transform: rotate(%.3fturn)", value/100)
+	if (value > 0.001) then
+		local f = string.format("%.7f", value / 100)
+		f = f:gsub("(%d)0+$", "%1") -- remove trailing zeros
+		return "transform: rotate("..f.."turn)"
 	end
 	return ''
 end
@@ -741,6 +775,8 @@ function p.parseEnumParams(frame)
 			else
 				entry.label = label .. " (" .. entry.value .. "%)"
 			end
+			-- tracking data errors
+			priv.sumErrorTracking(sum)
 		end
 	end
 
