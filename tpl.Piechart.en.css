@@ -14,6 +14,7 @@
 	border-radius: 50%;
 	background-color: #333;
 	color:black;
+	border: 1px solid black;
 }
 /* slices (default = pie25/pieX) */
 .smooth-pie div {
@@ -35,7 +36,10 @@
 .smooth-pie    .pie5 {clip-path: polygon(0% 0%, 32.49197% 0%, 0 100%);}
 .smooth-pie    .pie7 {clip-path: polygon(0% 0%, 47.056428% 0%, 0 100%);}
 .smooth-pie    .pie1 {clip-path: polygon(0% 0%, 6.2914667% 0%, 0 100%);}
-/* Border around pie (on top of slices). */
+.smooth-pie div.smooth-pie-border {
+	display: none;
+}
+/* Border around pie (on top of slices). *
 .smooth-pie div.smooth-pie-border {
 	position: absolute;
 	background-color: transparent;
@@ -45,6 +49,7 @@
 	border-radius: 50%;
 	box-sizing: border-box;
 	z-index: 20;
+	pointer-events: none;
 }
 /* unlock for supported browsers */
 @supports(clip-path: circle(50%)) {
