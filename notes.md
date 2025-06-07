@@ -1,0 +1,10 @@
+- [x] wiki2git -> repo
+- [ ] mw.lua
+- [ ] wikiploy to sandbox
+- [ ] wikiploy to release
+- [ ] itemTpl support (just "template" or "label-tpl" or "tpl"?)
+	- [ ] add new option to meta
+	- [ ] value of default tpl: "$L: $v"
+	- [ ] can I / should I sanitize it?
+	- [ ] support for $v, $d, $p
+- [ ] Check adding labels in value mode after changes... Module was adding percentages to labels unexpectedly
