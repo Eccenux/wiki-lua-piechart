@@ -1,7 +1,10 @@
-- [x] wiki2git -> repo
-- [ ] mw.lua
-- [ ] wikiploy to sandbox
-- [ ] wikiploy to release
+- [x] Git export
+	- [x] tpl & css from pl&en (separate by project; [wiki2git](https://www.npmjs.com/package/wiki-to-git))
+	- [x] lua module (common; wiki2git)
+- Git enhance
+	- [x] lua test framework
+	- [ ] [wikiploy](https://www.npmjs.com/package/wikiploy) to pl
+	- [ ] [wikiploy](https://www.npmjs.com/package/wikiploy) to en
 - [ ] itemTpl support (just "template" or "label-tpl" or "tpl"?)
 	- [ ] add new option to meta
 	- [ ] value of default tpl: "$L: $v"
