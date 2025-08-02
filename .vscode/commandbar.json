@@ -7,8 +7,8 @@
 		// running deployment as a task (so that prompts work)
 		// note that "Run dev deploy" is a label from tasks.json 
 		{
-			"text": "wikiploy-dev",
-			"tooltip": "Deploy pre-built script.",
+			"text": "wikiploy-dev (en)",
+			"tooltip": "Deploy to sandbox.",
 			"color": "lightgreen",
 			"commandType": "palette",
 			"command": "workbench.action.tasks.runTask|Run dev deploy",
@@ -17,7 +17,7 @@
 
 		{
 			"text": "wikiploy-pl",
-			"tooltip": "Deploy pre-built script.",
+			"tooltip": "Deploy main lua and css.",
 			"color": "#ffaaaa",
 			"commandType": "palette",
 			"command": "workbench.action.tasks.runTask|Run deploy pl",
@@ -25,7 +25,7 @@
 		},
 		{
 			"text": "wikiploy-en",
-			"tooltip": "Deploy pre-built script.",
+			"tooltip": "Deploy main lua and css.",
 			"color": "#ffaaaa",
 			"commandType": "palette",
 			"command": "workbench.action.tasks.runTask|Run deploy en",

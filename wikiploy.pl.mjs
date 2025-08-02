@@ -11,7 +11,7 @@ const ployBot = new Wikiploy(botpass);
 	// push out file(s) to wiki
 	const configs = [];
 	
-	site = 'pl.wikipedia.org';
+	let site = 'pl.wikipedia.org';
 	configs.push(new DeployConfig({
 		src: 'tpl.Piechart.pl.css',
 		dst: 'Template:Piechart/style.css',
