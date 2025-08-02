@@ -6,6 +6,15 @@
 			"request": "launch",
 			"name": "Launch Lua script",
 			"program": "${workspaceFolder}/_test.lua"
-		}
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Run current JS",
+			"skipFiles": [
+				"<node_internals>/**"
+			],
+			"program": "${workspaceFolder}\\${file}"
+		},
 	]
 }

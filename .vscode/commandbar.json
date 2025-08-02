@@ -1,0 +1,27 @@
+// Remember to change VSC settings (UI): in `files.associations` add `commandbar.json: jsonc`
+{
+	"skipTerminateQuickPick": true,
+	"skipSwitchToOutput": false,
+	"skipErrorMessage": true,
+	"commands": [
+		// running deployment as a task (so that prompts work)
+		// note that "Run dev deploy" is a label from tasks.json 
+		{
+			"text": "wikiploy-dev",
+			"tooltip": "Deploy pre-built script.",
+			"color": "lightgreen",
+			"commandType": "palette",
+			"command": "workbench.action.tasks.runTask|Run dev deploy",
+			"priority": 0
+		},
+
+		{
+			"text": "wikiploy-relase",
+			"tooltip": "Deploy pre-built script.",
+			"color": "#ffaaaa",
+			"commandType": "palette",
+			"command": "workbench.action.tasks.runTask|Run deploy",
+			"priority": 0
+		}
+	]
+}

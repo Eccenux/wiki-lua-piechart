@@ -1,2 +1,4 @@
 /mw
 *.lnk
+/node_modules
+bot.config.*

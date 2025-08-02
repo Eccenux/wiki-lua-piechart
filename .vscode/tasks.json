@@ -1,0 +1,29 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "deploy-dev",
+			"group": "none",
+			"problemMatcher": [],
+			"label": "Run dev deploy",
+			"detail": "Run deploy script (wikiploy)"
+		},
+		{
+			"type": "npm",
+			"script": "deploy",
+			"group": "none",
+			"problemMatcher": [],
+			"label": "Run deploy",
+			"detail": "Run deploy script (wikiploy)"
+		},
+		{
+			"type": "npm",
+			"script": "install",
+			"group": "none",
+			"problemMatcher": [],
+			"label": "npm install",
+			"detail": "install dependencies from package"
+		}
+	]
+}
