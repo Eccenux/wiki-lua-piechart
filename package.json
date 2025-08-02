@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
 	"deploy-dev": "node wikiploy-dev.mjs",
-	"deploy": "node wikiploy.mjs"
+	"deploy-pl": "node wikiploy.pl.mjs",
+	"deploy-en": "node wikiploy.en.mjs"
   },
   "repository": {
     "type": "git",

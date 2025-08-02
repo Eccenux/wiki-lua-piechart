@@ -16,11 +16,19 @@
 		},
 
 		{
-			"text": "wikiploy-relase",
+			"text": "wikiploy-pl",
 			"tooltip": "Deploy pre-built script.",
 			"color": "#ffaaaa",
 			"commandType": "palette",
-			"command": "workbench.action.tasks.runTask|Run deploy",
+			"command": "workbench.action.tasks.runTask|Run deploy pl",
+			"priority": 0
+		},
+		{
+			"text": "wikiploy-en",
+			"tooltip": "Deploy pre-built script.",
+			"color": "#ffaaaa",
+			"commandType": "palette",
+			"command": "workbench.action.tasks.runTask|Run deploy en",
 			"priority": 0
 		}
 	]

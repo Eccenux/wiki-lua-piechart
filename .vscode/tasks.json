@@ -9,14 +9,24 @@
 			"label": "Run dev deploy",
 			"detail": "Run deploy script (wikiploy)"
 		},
+
 		{
 			"type": "npm",
-			"script": "deploy",
+			"script": "deploy-pl",
 			"group": "none",
 			"problemMatcher": [],
-			"label": "Run deploy",
-			"detail": "Run deploy script (wikiploy)"
+			"label": "Run deploy pl",
+			"detail": "Run full deploy script (wikiploy)"
 		},
+		{
+			"type": "npm",
+			"script": "deploy-en",
+			"group": "none",
+			"problemMatcher": [],
+			"label": "Run deploy en",
+			"detail": "Run full deploy script (wikiploy)"
+		},
+
 		{
 			"type": "npm",
 			"script": "install",
