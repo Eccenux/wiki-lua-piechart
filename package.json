@@ -1,0 +1,23 @@
+{
+  "name": "lua-piechart",
+  "version": "1.0.0",
+  "description": "The Piechart Module creates HTML that with some CSS transforms creates a pie chart.",
+  "main": "index.js",
+  "scripts": {
+	"deploy-dev": "node wikiploy-dev.mjs",
+	"deploy": "node wikiploy.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Eccenux/wiki-lua-piechart.git"
+  },
+  "author": "Maciej Nux",
+  "license": "CC-BY-SA-4.0",
+  "bugs": {
+    "url": "https://github.com/Eccenux/wiki-lua-piechart/issues"
+  },
+  "homepage": "https://github.com/Eccenux/wiki-lua-piechart#readme",
+  "devDependencies": {
+    "wikiploy": "^2.2.2"
+  }
+}
