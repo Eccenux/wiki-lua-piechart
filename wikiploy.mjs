@@ -1,4 +1,4 @@
-import { Wikiploy, setupSummary } from 'wikiploy';
+import { Wikiploy, setupSummary, DeployConfig } from 'wikiploy';
 
 import * as botpass from './bot.config.mjs';
 const ployBot = new Wikiploy(botpass);
@@ -9,14 +9,34 @@ const ployBot = new Wikiploy(botpass);
 	await setupSummary(ployBot);
 
 	// push out file(s) to wiki
-	// const configs = [];
-	// // dev version
-	// addConfig(configs, 'en.wikipedia.org');
-	// // release versions
-	// addConfigRelease(configs, 'pl.wikipedia.org');
-	// addConfigRelease(configs, 'en.wikipedia.org');
+	const configs = [];
+	
+	let site = 'en.wikipedia.org';
+	configs.push(new DeployConfig({
+		src: 'tpl.Piechart.en.css',
+		dst: 'Template:Pie chart/styles.css',
+		site,
+	}));
+	configs.push(new DeployConfig({
+		src: 'Piechart.lua',
+		dst: 'Module:Piechart',
+		site,
+	}));
 
-	// await ployBot.deploy(configs);
+	site = 'pl.wikipedia.org';
+	configs.push(new DeployConfig({
+		src: 'tpl.Piechart.pl.css',
+		dst: 'Template:Piechart/style.css',
+		site,
+	}));
+	configs.push(new DeployConfig({
+		src: 'Piechart.lua',
+		dst: 'Module:Piechart',
+		site,
+	}));
+
+	// deploy
+	await ployBot.deploy(configs);
 
 })().catch(err => {
 	console.error(err);
