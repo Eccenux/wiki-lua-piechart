@@ -4,8 +4,8 @@
 - Git enhance
 	- [x] lua test framework
 	- [x] [wikiploy-dev](https://www.npmjs.com/package/wikiploy) to en
-	- [ ] [wikiploy](https://www.npmjs.com/package/wikiploy) to pl
-	- [ ] [wikiploy](https://www.npmjs.com/package/wikiploy) to en
+	- [x] [wikiploy](https://www.npmjs.com/package/wikiploy) to pl
+	- [x] [wikiploy](https://www.npmjs.com/package/wikiploy) to en
 - [ ] itemTpl support (just "template" or "label-tpl" or "tpl"?)
 	- [ ] add new option to meta
 	- [ ] value of default tpl: "$L: $v"
