@@ -3,6 +3,7 @@
 	- [x] lua module (common; wiki2git)
 - Git enhance
 	- [x] lua test framework
+	- [x] [wikiploy-dev](https://www.npmjs.com/package/wikiploy) to en
 	- [ ] [wikiploy](https://www.npmjs.com/package/wikiploy) to pl
 	- [ ] [wikiploy](https://www.npmjs.com/package/wikiploy) to en
 - [ ] itemTpl support (just "template" or "label-tpl" or "tpl"?)

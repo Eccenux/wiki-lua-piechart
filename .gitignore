@@ -2,3 +2,4 @@
 *.lnk
 /node_modules
 bot.config.*
+package-lock.json
