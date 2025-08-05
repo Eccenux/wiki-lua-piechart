@@ -17,7 +17,7 @@ The templates for plwiki and enwiki are different, but CSS is mostly the same. T
 
 This repository includes a Lua mw toolkit loaded as a submodule.
 
-## Clone with submodules
+### Clone with submodules
 
 Make sure to clone with submodules:
 
@@ -25,7 +25,7 @@ Make sure to clone with submodules:
 git clone --recurse-submodules https://github.com/Eccenux/wiki-lua-piechart.git
 ```
 
-## Load submodules after clone
+### Load submodules after clone
 
 If you've already cloned without `--recurse-submodules`, run:
 
