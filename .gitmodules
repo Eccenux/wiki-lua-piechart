@@ -1,0 +1,3 @@
+[submodule "mw"]
+	path = mw
+	url = https://github.com/Eccenux/wiki-lua-mw-mock.git
