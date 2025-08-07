@@ -4,8 +4,14 @@
 		{
 			"type": "lua",
 			"request": "launch",
-			"name": "Launch Lua script",
+			"name": "Run _test.lua",
 			"program": "${workspaceFolder}/_test.lua"
+		},
+		{
+			"type": "lua",
+			"request": "launch",
+			"name": "Run cuurent Lua",
+			"program": "${file}"
 		},
 		{
 			"type": "node",
