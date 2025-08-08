@@ -582,16 +582,23 @@ end
 	Prepare final label.
 
 	Typical tpl:
-		"$L: $v"
+		"$L: $v" (same as: "$label: $auto")
 	will result in:
 		"Abc: 23%" -- when values are percentages
 		"Abc: 1234 (23%)" -- when values are autoscaled
 	
 	Advanced tpl:
-		"Abc: $d ($p)" -- only works with autoscale
+		"$L: $d ($p)" e.g. "Abc: 1234 (23%)" for {"label":"Abc", "value":1234}
+		"$L: $v" is the same as above when values are autoscaled
+	
+	Long vs short variable names:
+		$label ($L)
+		$auto ($v)
+		$value ($d)
+		$percent ($p)
 ]]
 function priv.prepareLabel(tpl, entry)
-	-- default tpl
+	-- setup default tpl
 	if not tpl or tpl == "" then
 		-- simple if no label
 		if not entry.label or entry.label == "" then
@@ -611,8 +618,15 @@ function priv.prepareLabel(tpl, entry)
 	local pRaw = priv.formatNum(entry.value)
 	local pp = pRaw .. "%%"
 	
-	local label = "" 
-	label = tpl:gsub("%$L", labelLabel)
+	local label = tpl
+	-- aliases
+	label = label
+		:gsub("%$label", "$L")
+		:gsub("%$auto", "$v")
+		:gsub("%$value", "$d")
+		:gsub("%$percent", "$p")
+	-- replace variables
+	label = label:gsub("%$L", labelLabel)
 	local d = priv.formatLargeNum(entry.raw and entry.raw or entry.value)
 	local v = entry.raw and (d .. " (" .. pp .. ")") or pp
 	label = label

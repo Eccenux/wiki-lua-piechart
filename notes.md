@@ -25,15 +25,14 @@
 ## Long names
 
 Add support for long variables:
-- [ ] $label ($L)
-- [ ] $auto ($v)
-- [ ] $formattedRawData ($d)
-- [ ] $percentNumber ($p)
+- [x] $label ($L)
+- [x] $auto ($v)
+- [x] $value ($d)
+- [x] $percent ($p)
 
 ## Cleanup
 
 - [ ] Report unknown $x in template during preview.
-- [ ] Report when $x is not supported in current mode (autoscale off).
 - [ ] Docs:
 	- [ ] Add table with long and short variable names and an example renders of large and small numbers.
 	- [ ] Use longer versions in new examples of `labelformat` option.

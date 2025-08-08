@@ -11,7 +11,7 @@ end
 -- Load a copy of a module
 -- Note that this loads "Piechart.lua" file (a local file).
 local p = require('Module:Piechart')
-local json_data = '[{"label": "k: $v", "value": 33.1}, {"label": "m: $v", "value": -1}]'
+local json_data = '[{"label": "k: $v", "value": 3.2}, {"label": "m: $v", "value": -1}]'
 local user_options = {}
 user_options.meta = '{"legend":true}'
 -- html = p.renderPie(json_data, user_options)
@@ -19,13 +19,17 @@ user_options.meta = '{"legend":true}'
 -- print(html)
 
 function test_prepareLabel(tpl, entry)
-	print( tpl, '->', p.__priv.prepareLabel(tpl, entry) )
+	print( string.format("[L:%s][t:%s]", tostring(entry.label), tostring(tpl)), '->', p.__priv.prepareLabel(tpl, entry) )
 end
 
-mw.logObject ({label= "k: $v or just k", value= 33.1})
-test_prepareLabel("", {label= "k: $v", value= 33.1})
-test_prepareLabel("$L: $v", {label= "k", value= 33.1})
-test_prepareLabel("$v", {label= "k", value= 33.1})
+mw.logObject ({value= 3.2})
+test_prepareLabel("", {label= "k: $v", value= 3.2})
+test_prepareLabel("$L: $v", {label= "k", value= 3.2})
+test_prepareLabel("$v", {label= "k", value= 3.2})
+test_prepareLabel("$auto", {label= "k", value= 3.2})
+test_prepareLabel("$auto: $L", {label= "k", value= 3.2})
+test_prepareLabel("$auto: $label", {label= "k", value= 3.2})
+test_prepareLabel("$percent [$value]: $label", {label= "k", value= 3.2})
 
 -- raw is required for $d to work properly
 -- raw is added when autoscale is on
