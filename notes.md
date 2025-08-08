@@ -20,7 +20,7 @@
 - [x] Check testcases on sandbox. -> identical.
 - [x] Add testcases for labelformat.
 - [x] Release: pl, en.
-- [ ] Check adding labels in value mode after changes... Module was adding percentages to labels unexpectedly
+- [x] Fix adding variables to labels in enum-values mode (non-JSON)... [Module was adding percentages to labels unexpectedly](https://en.wikipedia.org/wiki/Template_talk:Pie_chart#c-Novarupta-20250601085500-Template_adds_incorrect_percentages_to_labels)
 
 ## Long names
 

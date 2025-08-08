@@ -766,6 +766,9 @@ To:
 ]]
 function p.parseEnumParams(frame)
 	local args = frame:getParent().args
+	return priv.parseEnumParams(args)
+end
+function priv.parseEnumParams(args)
 	local result = {}
 	
 	local i = 1
@@ -793,12 +796,12 @@ function p.parseEnumParams(frame)
 	local willAutoscale = priv.willAutoscale(sum)
 	for _, entry in ipairs(result) do
 		local label = entry.label
-		if label and not label:find("%$v") then
+		if label and not label:find("%$[a-z]") then
 			-- autoscale will be forced, so use $v in labels
 			if willAutoscale then
 				entry.label = label .. " $v"
 			else
-				entry.label = label .. " (" .. entry.value .. "%)"
+				entry.label = label .. " ($p)"
 			end
 		end
 	end
@@ -814,7 +817,7 @@ function p.parseEnumParams(frame)
 		if otherValue < 0.001 then
 			otherValue = 0
 		end
-		local otherEntry = { label = (args["other-label"] or langOther) .. " ("..priv.formatNum(otherValue).."%)" }
+		local otherEntry = { label = (args["other-label"] or langOther) .. " ($p)" }
 		if args["other-color"] and args["other-color"] ~= "" then
 			otherEntry.color = args["other-color"]
 		else
