@@ -6,9 +6,10 @@
 	- [x] [wikiploy-dev](https://www.npmjs.com/package/wikiploy) to en
 	- [x] [wikiploy](https://www.npmjs.com/package/wikiploy) to pl
 	- [x] [wikiploy](https://www.npmjs.com/package/wikiploy) to en
-- [ ] itemTpl support (just "template" or "label-tpl" or "tpl"?)
-	- [ ] add new option to meta
-	- [ ] value of default tpl: "$L: $v"
-	- [ ] can I / should I sanitize it?
-	- [ ] support for $v, $d, $p
+- [x] global label formatting template support (just "template" or "label-tpl" or "tpl"?)
+	- [x] add new option to meta -> labelformat
+	- [x] value of default tpl: "$L: $v"
+	- [x] can I / should I sanitize it? -> No, probably not needed.
+	- [x] support for $v, $d, $p
+	- [x] testing
 - [ ] Check adding labels in value mode after changes... Module was adding percentages to labels unexpectedly

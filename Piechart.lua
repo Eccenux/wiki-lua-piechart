@@ -119,6 +119,8 @@ function p.setupOptions(user_options)
 		caption = "",
 		-- footer below the labels
 		footer = "",
+		-- formatting template for labels
+		labelformat = "",
 	}
 	-- internals
 	options.style = ""
@@ -158,6 +160,9 @@ function p.setupOptions(user_options)
 			end
 			if (type(rawOptions.footer) == "string") then
 				options.footer = rawOptions.footer
+			end
+			if (type(rawOptions.labelformat) == "string") then
+				options.labelformat = rawOptions.labelformat
 			end
 		end
 		-- build style
@@ -321,7 +326,7 @@ function priv.prepareSlice(entry, no, sum, total, options)
 	entry.value = value
 
 	-- prepare final label
-	entry.label = priv.prepareLabel(entry.label, entry)
+	entry.label = priv.prepareLabel(options.labelformat, entry)
 	-- background, but also color for MW syntax linter
 	entry.bcolor = priv.backColor(entry, no, total) .. ";color:#000"
 
@@ -577,7 +582,7 @@ end
 	Prepare final label.
 
 	Typical tpl:
-		"Abc: $v"
+		"$L: $v"
 	will result in:
 		"Abc: 23%" -- when values are percentages
 		"Abc: 1234 (23%)" -- when values are autoscaled
@@ -586,26 +591,34 @@ end
 		"Abc: $d ($p)" -- only works with autoscale
 ]]
 function priv.prepareLabel(tpl, entry)
-	-- static tpl
-	if tpl and not string.find(tpl, '$') then
-		return tpl
+	-- default tpl
+	if not tpl or tpl == "" then
+		-- simple if no label
+		if not entry.label or entry.label == "" then
+			tpl = "$v"
+		else
+			if string.find(entry.label, '$') then
+				tpl = entry.label
+			else
+				tpl = "$L: $v"
+			end
+		end
 	end
+
+	local labelLabel = entry.label and entry.label or priv.getLangOther()
 
 	-- format % value without %
-	local p = priv.formatNum(entry.value)
-
-	-- default template
-	if not tpl then
-		tpl = "$v"
-	end
+	local pRaw = priv.formatNum(entry.value)
+	local pp = pRaw .. "%%"
 	
 	local label = "" 
-	if entry.raw then
-		local d = priv.formatLargeNum(entry.raw)
-		label = tpl:gsub("%$p", p .. "%%"):gsub("%$d", d):gsub("%$v", d .. " (" .. p .. "%%)")
-	else
-		label = tpl:gsub("%$v", p .. "%%")
-	end
+	label = tpl:gsub("%$L", labelLabel)
+	local d = priv.formatLargeNum(entry.raw and entry.raw or entry.value)
+	local v = entry.raw and (d .. " (" .. pp .. ")") or pp
+	label = label
+		:gsub("%$p", pp)
+		:gsub("%$d", d)
+		:gsub("%$v", v)
 	return label
 end
 
@@ -792,12 +805,8 @@ function p.parseEnumParams(frame)
 	-- tracking data errors
 	priv.sumErrorTracking(sum, result)
 
-	-- support other value mapping
-	local lang = mw.language.getContentLanguage()
-	local langOther = "Other"
-	if (lang:getCode() == 'pl') then
-		langOther = "Inne"
-	end
+	-- -- support other value mapping
+	local langOther = priv.getLangOther()
 	local colorOther = "#FEFDFD" -- white-ish for custom colors for best chance and contrast
 	
 	local otherValue = 100 - sum
@@ -822,6 +831,15 @@ function p.parseEnumParams(frame)
 	
 	local jsonString = mw.text.jsonEncode(result)
 	return jsonString
+end
+
+function priv.getLangOther()
+	-- support other value mapping
+	local lang = mw.language.getContentLanguage()
+	if (lang:getCode() == 'pl') then
+		return "Inne"
+	end
+	return "Other"
 end
 
 -- Function to check if a value is true-ish
@@ -881,6 +899,9 @@ function p.parseMetaParams(frame)
 	end
 	if args["footer"] and args["footer"] ~= "" then
 		meta.footer = args["footer"]
+	end
+	if args["labelformat"] and args["labelformat"] ~= "" then
+		meta.labelformat = args["labelformat"]
 	end
 
 	return mw.text.jsonEncode(meta)
