@@ -805,7 +805,7 @@ function p.parseEnumParams(frame)
 	-- tracking data errors
 	priv.sumErrorTracking(sum, result)
 
-	-- -- support other value mapping
+	-- support other value mapping
 	local langOther = priv.getLangOther()
 	local colorOther = "#FEFDFD" -- white-ish for custom colors for best chance and contrast
 	
