@@ -604,7 +604,7 @@ function priv.prepareLabel(tpl, entry)
 		if not entry.label or entry.label == "" then
 			tpl = "$v"
 		else
-			if string.find(entry.label, '$') then
+			if entry.label:find("%$[a-z]") then
 				tpl = entry.label
 			else
 				tpl = "$L: $v"

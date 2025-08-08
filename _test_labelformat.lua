@@ -11,12 +11,21 @@ end
 -- Load a copy of a module
 -- Note that this loads "Piechart.lua" file (a local file).
 local p = require('Module:Piechart')
-local json_data = '[{"label": "k: $v", "value": 3.2}, {"label": "m: $v", "value": -1}]'
+
 local user_options = {}
-user_options.meta = '{"legend":true}'
--- html = p.renderPie(json_data, user_options)
--- -- mw.logObject(html)
--- print(html)
+user_options.meta = '{"legend":true, "autoscale": true}'
+
+-- with variable in label
+local json_data = '[{"label": "k: $v", "value": 40000}, {"label": "m: $v", "value": 60000}]'
+html = p.renderPie(json_data, user_options)
+print(html)
+
+-- no variables in labels
+local json_data = '[{"label": "k", "value": 40000}, {"label": "m", "value": 60000}]'
+html = p.renderPie(json_data, user_options)
+print(html)
+
+
 
 function test_prepareLabel(tpl, entry)
 	print( string.format("[L:%s][t:%s]", tostring(entry.label), tostring(tpl)), '->', p.__priv.prepareLabel(tpl, entry) )
