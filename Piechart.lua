@@ -179,6 +179,9 @@ function p.setupOptions(user_options)
 	return options
 end
 
+-- internal for testing legend rendering
+p.__priv.legendDebug = false
+
 --[[
 	Render piechart.
 	
@@ -214,6 +217,10 @@ function p.renderPie(json_data, user_options)
 	-- render legend
 	if options.legend then
 		html = html .. p.renderLegend(data, options)
+	end
+
+	if p.__priv.legendDebug then
+		return html
 	end
 
 	-- render items
@@ -367,6 +374,9 @@ function priv.renderLegendItem(entry, options)
 	local label = entry.label
 	local bcolor = entry.bcolor
 	local html = "\n<li>"
+	if p.__priv.legendDebug then
+		forPrinting = ""
+	end
 	html = html .. '<span class="l-color" style="'..forPrinting..bcolor..'"></span>'
 	html = html .. '<span class="l-label">'..label..'</span>'
 	return html .. "</li>"

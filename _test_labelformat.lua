@@ -12,6 +12,8 @@ end
 -- Note that this loads "Piechart.lua" file (a local file).
 local p = require('Module:Piechart')
 
+p.__priv.legendDebug = true
+
 local user_options = {}
 user_options.meta = '{"legend":true, "autoscale": true}'
 
