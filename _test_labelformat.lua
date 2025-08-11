@@ -41,6 +41,8 @@ test_prepareLabel("$auto", {label= "k", value= 3.2})
 test_prepareLabel("$auto: $L", {label= "k", value= 3.2})
 test_prepareLabel("$auto: $label", {label= "k", value= 3.2})
 test_prepareLabel("$percent [$value]: $label", {label= "k", value= 3.2})
+test_prepareLabel("$unknownVarTest [$value]: $label", {label= "k", value= 3.2})
+test_prepareLabel("$unknownVarTest [$value]: $label", {label= "Resources $ziemniaczki", value= 3.2})
 
 -- raw is required for $d to work properly
 -- raw is added when autoscale is on

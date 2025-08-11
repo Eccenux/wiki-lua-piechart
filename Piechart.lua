@@ -432,7 +432,7 @@ function priv.renderItem(previous, entry, options)
 	-- value too small to see
 	if (value < 0.03) then
 		mw.log('value too small', value, label)
-		mw.addWarning("pie chart: too small ↆ "..value.."% ("..label..")")
+		mw.addWarning("pie chart: Value too small ↆ "..value.."% ("..label..")")
 		return ""
 	end
 
@@ -643,6 +643,15 @@ function priv.prepareLabel(tpl, entry)
 		:gsub("%$p", pp)
 		:gsub("%$d", d)
 		:gsub("%$v", v)
+
+	-- Report unknown variables
+	for var in label:gmatch("%$[a-zA-Z]+") do
+		-- in preview
+		mw.addWarning("pie chart: Unknown variable (wrong format of your label): " .. var)
+		-- tracing links
+		_ = mw.title.new("Module:Piechart/tracing/unknown-variable").id
+	end
+
 	return label
 end
 

@@ -32,7 +32,10 @@ Add support for long variables:
 
 ## Cleanup
 
-- [ ] Report unknown $x in template during preview.
-- [ ] Docs:
-	- [ ] Add table with long and short variable names and an example renders of large and small numbers.
-	- [ ] Use longer versions in new examples of `labelformat` option.
+- [x] Report unknown $var in template during preview.
+- [x] Docs:
+	- [x] TemplateData en.
+	- [x] TemplateData pl.
+	- [x] Testcases with long names.
+	- [x] Add table with long and short variable names and an example renders of large and small numbers.
+	- [x] Use longer versions in new examples of `labelformat` option.
